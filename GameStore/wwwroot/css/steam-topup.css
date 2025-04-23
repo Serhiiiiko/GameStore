@@ -38,23 +38,39 @@
     color: #8f98a0;
     cursor: help;
     margin-left: 5px;
+    font-size: 14px;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.d-inline-block {
+    display: inline-block;
 }
 
 .steam-tooltip {
     display: none;
     position: absolute;
-    top: 25px;
-    left: 100px;
-    z-index: 100;
+    top: 20px;
+    left: -140px; /* Adjust this to position the tooltip */
+    z-index: 9999;
     background-color: #2a3f5a;
     border: 1px solid #427694;
     border-radius: 3px;
     padding: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 300px;
 }
 
 .tooltip-image {
-    max-width: 300px;
+    width: 100%;
+    display: block;
+}
+
+/* Show tooltip on hover */
+.position-relative:hover .steam-tooltip {
+    display: block;
 }
 
 .time-note {
