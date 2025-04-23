@@ -14,7 +14,7 @@
     <div class="col-lg-6">
         <div class="steam-topup-form">
             <div class="form-group mb-4">
-                <label class="text-white mb-2">
+                <label class="mb-2">
                     Логин Steam
                     <span class="position-relative d-inline-block">
                         <i class="fas fa-question-circle steam-help-icon"></i>
@@ -27,26 +27,25 @@
             </div>
 
             <div class="form-group mb-4">
-                <label class="text-white mb-2">Сумма</label>
+                <label class="mb-2">Сумма</label>
                 <input type="number" class="form-control" value="50">
                 <div class="payment-options mt-3">
-                    <button class="btn btn-primary me-2 mb-2">+ 100 ₽</button>
-                    <button class="btn btn-primary me-2 mb-2">+ 500 ₽</button>
-                    <button class="btn btn-primary me-2 mb-2">+ 1000 ₽</button>
+                    <button class="btn btn-primary me-2">+ 100 ₽</button>
+                    <button class="btn btn-primary me-2">+ 500 ₽</button>
+                    <button class="btn btn-primary me-2">+ 1000 ₽</button>
                 </div>
             </div>
 
             <div class="range-slider mb-4">
-                <label class="text-white d-flex justify-content-between">
+                <input type="range" class="form-range" min="50" max="15000" step="50" value="50" id="rangeSlider">
+                <div class="range-labels">
                     <span>50₽</span>
                     <span>15000₽</span>
-                </label>
-                <input type="range" class="form-range" min="50" max="15000" step="50" value="50">
+                </div>
             </div>
 
-
             <div class="form-group mb-4">
-                <label class="text-white mb-2">E-mail для квитанции</label>
+                <label class="mb-2">E-mail для квитанции</label>
                 <input type="email" class="form-control" placeholder="Ваш E-mail">
             </div>
 
@@ -61,13 +60,13 @@
     </div>
 
     <div class="col-lg-6">
-        <div class="info-panel p-4 border rounded">
-            <h5 class="mb-4">Информация об оплате</h5>
-            <p>• Минимальная сумма пополнения: 50₽</p>
-            <p>• Максимальная сумма пополнения: 15000₽</p>
-            <p>• Время зачисления средств: моментально</p>
-            <p>• Комиссия: 0%</p>
-            <p class="mt-4">Указывайте только логин Steam. Мы пополняем аккаунты только через официальный сервис Steam.</p>
+        <div class="info-panel">
+            <h5><i class="fa fa-info-circle me-2"></i>Информация об оплате</h5>
+            <p><i class="fa fa-check-circle me-2"></i> Минимальная сумма пополнения: 50₽</p>
+            <p><i class="fa fa-check-circle me-2"></i> Максимальная сумма пополнения: 15000₽</p>
+            <p><i class="fa fa-check-circle me-2"></i> Время зачисления средств: моментально</p>
+            <p><i class="fa fa-check-circle me-2"></i> Комиссия: 0%</p>
+            <p class="mt-4"><i class="fa fa-exclamation-circle me-2"></i> Указывайте только логин Steam. Мы пополняем аккаунты только через официальный сервис Steam.</p>
         </div>
     </div>
 </div>

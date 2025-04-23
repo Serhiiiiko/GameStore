@@ -1,330 +1,211 @@
-﻿.steam-wrapper {
-    color: #fff;
-}
-
-.steam-topup-container {
-    background-color: rgba(27, 40, 56, 0.8);
-    border-radius: 10px;
-    padding: 25px;
+﻿/* Enhanced Steam Top-up CSS */
+.steam-topup-form {
+    background-color: #27292a;
+    border-radius: 23px;
+    padding: 30px;
     margin-bottom: 30px;
 }
 
-.steam-logo {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+.form-group label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    color: #ec6090;
+    margin-bottom: 10px;
 }
 
-.steam-icon {
-    width: 40px;
-    margin-right: 15px;
+.form-control {
+    background-color: #1f2122;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 15px;
+    border-radius: 23px;
+    font-family: 'Poppins', sans-serif;
+    transition: all .3s;
 }
 
-.steam-form input {
-    background-color: rgba(32, 55, 90, 0.8);
-    border: 1px solid #394c5f;
-    color: white;
-    padding: 12px;
-    border-radius: 5px;
-    width: 100%;
-}
+    .form-control:focus {
+        background-color: #1f2122;
+        border-color: #ec6090;
+        color: #fff;
+        box-shadow: 0 0 8px rgba(236, 96, 144, 0.3);
+    }
 
-.login-group {
+.btn-primary {
+    font-size: 14px;
+    color: #fff;
+    background-color: #e75e8d;
+    padding: 12px 30px;
+    display: inline-block;
+    border-radius: 25px;
+    font-weight: 400;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    transition: all .3s;
     position: relative;
-    margin-bottom: 25px;
+    overflow: hidden;
+    border: none;
 }
+
+    .btn-primary:hover {
+        background-color: #fff;
+        color: #e75e8d;
+    }
+
+.payment-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+    .payment-options .btn {
+        flex: 1;
+        min-width: 80px;
+    }
+
+.range-slider {
+    position: relative;
+    margin: 30px 0;
+}
+
+    .range-slider .form-range {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        background: #1f2122;
+        border-radius: 4px;
+        outline: none;
+    }
+
+        .range-slider .form-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ec6090;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .range-slider .form-range::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ec6090;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+.info-panel {
+    background-color: #27292a;
+    border-radius: 23px;
+    border: 1px solid #444;
+    padding: 30px;
+}
+
+    .info-panel h5 {
+        color: #ec6090;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 20px;
+    }
+
+    .info-panel p {
+        color: #ccc;
+        margin-bottom: 15px;
+        position: relative;
+        padding-left: 5px;
+    }
 
 .steam-help-icon {
-    color: #8f98a0;
+    color: #ec6090;
     cursor: help;
     margin-left: 5px;
-    font-size: 14px;
+    transition: all 0.3s;
 }
 
-.position-relative {
-    position: relative;
-}
-
-.d-inline-block {
-    display: inline-block;
-}
+    .steam-help-icon:hover {
+        color: #fff;
+    }
 
 .steam-tooltip {
     display: none;
     position: absolute;
-    top: 20px;
-    left: -140px; /* Adjust this to position the tooltip */
+    top: 30px;
+    left: -140px;
     z-index: 9999;
-    background-color: #2a3f5a;
-    border: 1px solid #427694;
-    border-radius: 3px;
-    padding: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: #1f2122;
+    border: 1px solid #ec6090;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
     width: 300px;
 }
 
 .tooltip-image {
     width: 100%;
     display: block;
+    border-radius: 5px;
 }
 
-/* Show tooltip on hover */
 .position-relative:hover .steam-tooltip {
     display: block;
 }
 
-.time-note {
-    color: #8f98a0;
-    font-size: 0.8em;
-    margin-top: 5px;
+.text-muted {
+    color: #666 !important;
 }
 
-.amount-buttons {
-    display: flex;
-    margin-top: 10px;
-    gap: 10px;
+/* Animation for button press */
+.btn-primary:active {
+    transform: scale(0.95);
 }
 
-.amount-btn {
-    background-color: #2b4c6f;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-    .amount-btn:hover {
-        background-color: #366ea1;
-    }
-
-.slider-container {
-    margin: 30px 0;
-}
-
-.slider {
-    width: 100%;
-    height: 5px;
-    background: #1e3953;
-    outline: none;
+/* Улучшение видимости ползунка и значений */
+input[type="range"] {
     -webkit-appearance: none;
-}
-
-    .slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: white;
-        cursor: pointer;
-    }
-
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    color: #8f98a0;
-}
-
-.payment-selection {
-    margin-bottom: 20px;
-    display: flex;
-}
-
-.payment-flag-btn {
-    display: flex;
-    align-items: center;
-    background-color: #2b4c6f;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.payment-flag {
-    width: 20px;
-    margin-right: 5px;
-}
-
-.payment-currency-btn {
-    background-color: #2b4c6f;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.warnings {
-    margin-top: 30px;
-}
-
-.warning-box {
-    display: flex;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-.red-warning {
-    background-color: rgba(198, 40, 40, 0.2);
-    border: 1px solid #8a2a2a;
-}
-
-.yellow-warning {
-    background-color: rgba(198, 178, 40, 0.2);
-    border: 1px solid #8a7a2a;
-}
-
-.warning-box i {
-    font-size: 24px;
-    margin-right: 15px;
-    color: #c62828;
-}
-
-.yellow-warning i {
-    color: #c6b228;
-}
-
-.warning-box a {
-    color: #66c0f4;
-    text-decoration: none;
-}
-
-.steam-sidebar {
-    background-color: rgba(27, 40, 56, 0.8);
-    border-radius: 10px;
-    padding: 15px;
-}
-
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.steam-icon-small {
-    width: 30px;
-    margin-right: 10px;
-}
-
-.payment-methods {
-    margin-bottom: 20px;
-}
-
-.payment-method-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #394c5f;
-}
-
-.payment-icon {
-    width: 24px;
-    margin-right: 10px;
-}
-
-.payment-options {
-    display: flex;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.payment-option-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #2b4c6f;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-    .payment-option-btn img {
-        width: 30px;
-        margin-bottom: 5px;
-    }
-
-.promo-container {
-    margin: 15px 0;
-}
-
-.promo-input {
-    display: flex;
-    margin-top: 5px;
-}
-
-    .promo-input input {
-        flex: 1;
-        background-color: #203a56;
-        border: 1px solid #394c5f;
-        color: #66c0f4;
-        padding: 10px;
-        border-radius: 5px 0 0 5px;
-    }
-
-.promo-btn {
-    background-color: #203a56;
-    color: white;
-    border: 1px solid #394c5f;
-    border-left: none;
-    padding: 0 15px;
-    border-radius: 0 5px 5px 0;
-    cursor: pointer;
-}
-
-.login-info, .total-amount {
-    margin: 15px 0;
-}
-
-.amount-display {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.main-amount {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-.discount {
-    color: #8f98a0;
-    text-decoration: line-through;
-    font-size: 0.9em;
-}
-
-.email-input {
-    margin: 15px 0;
-}
-
-.topup-btn {
-    background-color: #1a3a67;
-    color: white;
-    border: none;
-    padding: 12px;
     width: 100%;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    font-weight: bold;
+    height: 8px;
+    background: #27292a;
+    border-radius: 4px;
+    margin: 15px 0 30px 0;
 }
 
-    .topup-btn:hover {
-        background-color: #2a5a97;
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #ec6090;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     }
 
-.terms-note {
-    font-size: 0.8em;
-    color: #8f98a0;
+    input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #ec6090;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+/* Стиль для меток значений ползунка */
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -25px;
+    margin-bottom: 20px;
+    padding: 0 5px;
 }
 
-    .terms-note a {
-        color: #66c0f4;
-        text-decoration: none;
+    .range-labels span {
+        color: #ec6090;
+        font-weight: bold;
+        font-size: 16px;
+        font-family: 'Poppins', sans-serif;
+        background-color: #1f2122;
+        padding: 3px 8px;
+        border-radius: 10px;
     }
+
