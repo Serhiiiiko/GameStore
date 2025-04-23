@@ -1,22 +1,8 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    // Get the help icon and tooltip
-    const loginHelpIcon = document.getElementById('loginHelpIcon');
-    const loginTooltip = document.getElementById('loginTooltip');
-
-    // Show tooltip when hovering over the help icon
-    if (loginHelpIcon && loginTooltip) {
-        loginHelpIcon.addEventListener('mouseenter', function () {
-            loginTooltip.style.display = 'block';
-        });
-
-        loginHelpIcon.addEventListener('mouseleave', function () {
-            loginTooltip.style.display = 'none';
-        });
-    }
-
-    // Slider functionality
-    const amountSlider = document.getElementById('amountSlider');
+    // Get references to the form elements
+    const amountSlider = document.querySelector('input[type="range"]');
     const amountInput = document.querySelector('input[type="number"]');
+    const paymentButtons = document.querySelectorAll('.payment-options button');
 
     if (amountSlider && amountInput) {
         // Update input when slider changes
@@ -26,25 +12,52 @@
 
         // Update slider when input changes
         amountInput.addEventListener('input', function () {
+            // Ensure value is within min/max bounds
+            const value = parseInt(this.value);
+            const min = parseInt(amountSlider.min);
+            const max = parseInt(amountSlider.max);
+
+            if (value < min) {
+                this.value = min;
+            } else if (value > max) {
+                this.value = max;
+            }
+
             amountSlider.value = this.value;
         });
     }
 
-    // Amount buttons
-    const amountButtons = document.querySelectorAll('.amount-btn');
+    // Add functionality to payment buttons
+    if (paymentButtons.length > 0) {
+        paymentButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent form submission
 
-    amountButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Extract the number from the button text (e.g., "+ 100 ₽" -> 100)
-            const amount = parseInt(this.textContent.match(/\d+/)[0]);
+                // Extract the amount from button text (e.g., "+ 100 ₽" -> 100)
+                const amountText = this.textContent.trim();
+                const match = amountText.match(/\+ (\d+) ₽/);
 
-            // Add to current amount
-            amountInput.value = parseInt(amountInput.value) + amount;
+                if (match && match[1]) {
+                    const amount = parseInt(match[1]);
 
-            // Update slider
-            if (amountSlider) {
-                amountSlider.value = amountInput.value;
-            }
+                    // Add to current amount
+                    let currentAmount = parseInt(amountInput.value) || 0;
+                    let newAmount = currentAmount + amount;
+
+                    // Ensure it doesn't exceed maximum
+                    const max = parseInt(amountSlider.max);
+                    if (newAmount > max) {
+                        newAmount = max;
+                    }
+
+                    // Update input and slider
+                    amountInput.value = newAmount;
+                    amountSlider.value = newAmount;
+                }
+            });
         });
-    });
+    }
+
+    // The tooltip for Steam help icon is already handled via CSS :hover
+    // No additional JavaScript needed for that functionality
 });
