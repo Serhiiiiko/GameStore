@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Models;
 using GameStore.Interfaces;
+using GameStore.Repositories;
 
 namespace GameStore.Controllers
 {
@@ -9,16 +10,40 @@ namespace GameStore.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IGameService _gameService;
+        private readonly IOrderRepository _orderRepository;
 
-        public HomeController(ILogger<HomeController> logger, IGameService gameService)
+        public HomeController(ILogger<HomeController> logger, IGameService gameService, IOrderRepository orderRepository)
         {
             _logger = logger;
             _gameService = gameService;
+            _orderRepository = orderRepository;
         }
 
+        // Update the Index action in HomeController.cs
         public async Task<IActionResult> Index()
         {
             var games = await _gameService.GetAllGamesAsync();
+
+            // Get user orders from cookies if they exist
+            var orderIds = Request.Cookies["UserOrders"]?.Split(',').Where(id => !string.IsNullOrEmpty(id)).ToList();
+            var userOrders = new List<Order>();
+
+            if (orderIds != null && orderIds.Any())
+            {
+                foreach (var orderId in orderIds)
+                {
+                    if (int.TryParse(orderId, out var id))
+                    {
+                        var order = await _orderRepository.GetByIdAsync(id);
+                        if (order != null)
+                        {
+                            userOrders.Add(order);
+                        }
+                    }
+                }
+            }
+
+            ViewBag.UserOrders = userOrders;
             return View(games);
         }
 

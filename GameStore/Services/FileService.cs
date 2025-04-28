@@ -14,7 +14,7 @@ namespace GameStore.Services
             _environment = environment;
             _uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
 
-            // Создаем директорию, если она не существует
+            // Create directory if it doesn't exist
             if (!Directory.Exists(_uploadsFolder))
             {
                 Directory.CreateDirectory(_uploadsFolder);
@@ -26,22 +26,22 @@ namespace GameStore.Services
             if (file == null || file.Length == 0)
                 return null;
 
-            // Проверяем, что файл - изображение
+            // Check if file is an image
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (string.IsNullOrEmpty(extension) || !IsImageExtension(extension))
-                throw new ArgumentException("Загруженный файл не является изображением");
+                throw new ArgumentException("Uploaded file is not an image");
 
-            // Генерируем уникальное имя файла
+            // Generate unique filename
             var fileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(_uploadsFolder, fileName);
 
-            // Сохраняем файл
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            // Save file
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                await file.CopyToAsync(stream);
+                await file.CopyToAsync(fileStream);
             }
 
-            // Возвращаем относительный путь к файлу для сохранения в БД
+            // Return relative path for database
             return $"/images/{fileName}";
         }
 
@@ -62,7 +62,7 @@ namespace GameStore.Services
             }
             catch (Exception)
             {
-                // Логирование ошибки (в реальном приложении)
+                // Log error (in a real application)
             }
         }
 

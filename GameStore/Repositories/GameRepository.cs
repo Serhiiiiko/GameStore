@@ -33,7 +33,20 @@ namespace GameStore.Repositories
 
         public async Task UpdateAsync(Game game)
         {
-            _context.Entry(game).State = EntityState.Modified;
+            // Check if entity is already being tracked
+            var existingEntity = await _context.Games.FindAsync(game.Id);
+
+            if (existingEntity != null)
+            {
+                // Update the properties of the tracked entity
+                _context.Entry(existingEntity).CurrentValues.SetValues(game);
+            }
+            else
+            {
+                // If no entity is being tracked, attach and mark as modified
+                _context.Entry(game).State = EntityState.Modified;
+            }
+
             await _context.SaveChangesAsync();
         }
 

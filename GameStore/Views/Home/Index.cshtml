@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Game>
 @{
     ViewData["Title"] = "Главная";
+    var userOrders = ViewBag.UserOrders as IEnumerable<Order> ?? new List<Order>();
 }
 
 <!-- ***** Banner Start ***** -->
@@ -34,7 +35,7 @@
                             <h4>@game.Title<br><span>@game.Genre</span></h4>
                             <ul>
                                 <li><i class="fa fa-star"></i> @game.Rating</li>
-                                <li><i class="fa fa-download"></i> @game.Downloads</li>
+                                <li style="color: #ec6090; font-weight: bold;">@game.Price.ToString("₽0")</li>
                             </ul>
                         </div>
                     </div>
@@ -55,36 +56,32 @@
         <div class="heading-section">
             <h4><em>Ваши</em> покупки</h4>
         </div>
-        <div class="item">
-            <ul>
-                <li><img src="~/images/game-01.jpg" alt="Dota 2" class="templatemo-item"></li>
-                <li><h4>Dota 2</h4><span>Песочница</span></li>
-                <li><h4>Дата добавления</h4><span>24/08/2024</span></li>
-                <li><h4>Время игры</h4><span>634 ч 22 мин</span></li>
-                <li><h4>Статус</h4><span>Загружено</span></li>
-                <li><div class="main-border-button border-no-active"><a href="#">Загружено</a></div></li>
-            </ul>
-        </div>
-        <div class="item">
-            <ul>
-                <li><img src="~/images/game-02.jpg" alt="Fortnite" class="templatemo-item"></li>
-                <li><h4>Fortnite</h4><span>Песочница</span></li>
-                <li><h4>Дата добавления</h4><span>22/06/2024</span></li>
-                <li><h4>Время игры</h4><span>740 ч 52 мин</span></li>
-                <li><h4>Статус</h4><span>Загружено</span></li>
-                <li><div class="main-border-button"><a href="#">Загрузить</a></div></li>
-            </ul>
-        </div>
-        <div class="item last-item">
-            <ul>
-                <li><img src="~/images/game-03.jpg" alt="CS-GO" class="templatemo-item"></li>
-                <li><h4>CS-GO</h4><span>Песочница</span></li>
-                <li><h4>Дата добавления</h4><span>21/04/2024</span></li>
-                <li><h4>Время игры</h4><span>892 ч 14 мин</span></li>
-                <li><h4>Статус</h4><span>Загружено</span></li>
-                <li><div class="main-border-button border-no-active"><a href="#">Загружено</a></div></li>
-            </ul>
-        </div>
+
+        @if (ViewBag.UserOrders == null || !((IEnumerable<Order>)ViewBag.UserOrders).Any())
+        {
+            <div class="item">
+                <p>У вас пока нет покупок. Посмотрите наш каталог игр и выберите то, что вам нравится!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var order in (IEnumerable<Order>)ViewBag.UserOrders)
+            {
+                <div class="item">
+                    <ul>
+                        <li>
+                            <img src="@(string.IsNullOrEmpty(order.Game?.ImageUrl) ? "/images/game-01.jpg" : order.Game.ImageUrl)"
+                                 alt="@order.Game?.Title" class="templatemo-item">
+                        </li>
+                        <li><h4>@order.Game?.Title</h4><span>@order.Game?.Genre</span></li>
+                        <li><h4>Дата добавления</h4><span>@order.OrderDate.ToString("dd/MM/yyyy")</span></li>
+                        <li><h4>Ключ</h4><span>@order.Key</span></li>
+                        <li><h4>Статус</h4><span>@(order.IsCompleted ? "Загружено" : "В обработке")</span></li>
+                        <li><h4>Цена</h4><span>@order.Game?.Price.ToString("₽0")</span></li>
+                    </ul>
+                </div>
+            }
+        }
     </div>
     <div class="col-lg-12">
         <div class="main-button">
@@ -112,7 +109,7 @@
                         <div class="mb-3">
                             <div class="d-flex justify-content-between">
                                 <div><i class="fa fa-star" style="color: yellow;"></i> <span id="gameRating"></span></div>
-                                <div><i class="fa fa-download"></i> <span id="gameDownloads"></span></div>
+                                <div></> <span id="gameDownloads"></span></div>
                             </div>
                         </div>
                         <div class="mb-3">

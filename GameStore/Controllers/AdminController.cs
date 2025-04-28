@@ -124,28 +124,37 @@ namespace GameStore.Controllers
 
             if (ModelState.IsValid)
             {
-                // Получаем существующую игру для проверки, было ли изображение заменено
+                // Get the existing game
                 var existingGame = await _gameService.GetGameByIdAsync(game.Id);
 
-                // Обработка загруженного файла
+                if (existingGame == null)
+                {
+                    return NotFound();
+                }
+
+                // Update the properties of the existing entity
+                existingGame.Title = game.Title;
+                existingGame.Description = game.Description;
+                existingGame.Genre = game.Genre;
+                existingGame.Price = game.Price;
+                existingGame.Rating = game.Rating;
+                existingGame.Downloads = game.Downloads;
+
+                // Handle image upload
                 if (game.ImageFile != null)
                 {
-                    // Удаляем старое изображение, если оно существует
+                    // Delete old image if it exists
                     if (!string.IsNullOrEmpty(existingGame.ImageUrl))
                     {
                         _fileService.DeleteImage(existingGame.ImageUrl);
                     }
 
-                    // Сохраняем новое изображение
-                    game.ImageUrl = await _fileService.SaveImageAsync(game.ImageFile);
-                }
-                else
-                {
-                    // Если файл не загружен, сохраняем старый путь к изображению
-                    game.ImageUrl = existingGame.ImageUrl;
+                    // Save new image
+                    existingGame.ImageUrl = await _fileService.SaveImageAsync(game.ImageFile);
                 }
 
-                await _gameService.UpdateGameAsync(game);
+                // Update the existing entity
+                await _gameService.UpdateGameAsync(existingGame);
                 return RedirectToAction("Index");
             }
 
