@@ -1,49 +1,57 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Models;
+using GameStore.Interfaces;
 
 namespace GameStore.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IGameService _gameService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IGameService gameService)
         {
             _logger = logger;
+            _gameService = gameService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var games = await _gameService.GetAllGamesAsync();
+            return View(games);
         }
 
-        public IActionResult Browse()
+        public async Task<IActionResult> Browse()
         {
-            // TODO: Implement browse functionality with game listings
-            return View();
+            var games = await _gameService.GetAllGamesAsync();
+            return View(games);
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
-            // TODO: Implement game details view with the specified ID
             if (id == null)
             {
                 return NotFound();
             }
 
-            return View();
+            var game = await _gameService.GetGameByIdAsync(id.Value);
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            return View(game);
         }
 
         public IActionResult Streams()
         {
-            // TODO: Implement streams view
             return View();
         }
 
-        public IActionResult Profile()
+        public IActionResult Profile(string email)
         {
-            // TODO: Implement user profile view
+            ViewBag.Email = email;
             return View();
         }
 
