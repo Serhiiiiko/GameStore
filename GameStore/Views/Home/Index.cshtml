@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<Game>
+@{
     ViewData["Title"] = "Главная";
 }
 
@@ -25,96 +26,23 @@
                 <h4><em>Купить игры</em> сейчас</h4>
             </div>
             <div class="row">
-                <div class="col-lg-3 col-sm-6">
-                    <div class="item">
-                        <img src="~/images/popular-01.jpg" alt="Fortnite">
-                        <h4>Fortnite<br><span>Песочница</span></h4>
-                        <ul>
-                            <li><i class="fa fa-star"></i> 4.8</li>
-                            <li><i class="fa fa-download"></i> 2.3M</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="item">
-                        <img src="~/images/popular-02.jpg" alt="PUBG">
-                        <h4>PubG<br><span>Королевская битва</span></h4>
-                        <ul>
-                            <li><i class="fa fa-star"></i> 4.8</li>
-                            <li><i class="fa fa-download"></i> 2.3M</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="item">
-                        <img src="~/images/popular-03.jpg" alt="Dota 2">
-                        <h4>Dota2<br><span>Steam-X</span></h4>
-                        <ul>
-                            <li><i class="fa fa-star"></i> 4.8</li>
-                            <li><i class="fa fa-download"></i> 2.3M</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="item">
-                        <img src="~/images/popular-04.jpg" alt="CS-GO">
-                        <h4>CS-GO<br><span>Легендарная</span></h4>
-                        <ul>
-                            <li><i class="fa fa-star"></i> 4.8</li>
-                            <li><i class="fa fa-download"></i> 2.3M</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="item">
-                        <div class="row">
-                            <div class="col-lg-6 col-sm-6">
-                                <div class="item inner-item">
-                                    <img src="~/images/popular-05.jpg" alt="Mini Craft">
-                                    <h4>Mini Craft<br><span>Легендарная</span></h4>
-                                    <ul>
-                                        <li><i class="fa fa-star"></i> 4.8</li>
-                                        <li><i class="fa fa-download"></i> 2.3M</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-sm-6">
-                                <div class="item">
-                                    <img src="~/images/popular-06.jpg" alt="Eagles Fly">
-                                    <h4>Eagles Fly<br><span>Matrix Games</span></h4>
-                                    <ul>
-                                        <li><i class="fa fa-star"></i> 4.8</li>
-                                        <li><i class="fa fa-download"></i> 2.3M</li>
-                                    </ul>
-                                </div>
-                            </div>
+                @foreach (var game in Model)
+                {
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="item" data-id="@game.Id" data-price="@game.Price">
+                            <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/popular-01.jpg" : game.ImageUrl)" alt="@game.Title">
+                            <h4>@game.Title<br><span>@game.Genre</span></h4>
+                            <ul>
+                                <li><i class="fa fa-star"></i> @game.Rating</li>
+                                <li><i class="fa fa-download"></i> @game.Downloads</li>
+                            </ul>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="item">
-                        <img src="~/images/popular-07.jpg" alt="Warface">
-                        <h4>Warface<br><span>Max 3D</span></h4>
-                        <ul>
-                            <li><i class="fa fa-star"></i> 4.8</li>
-                            <li><i class="fa fa-download"></i> 2.3M</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="item">
-                        <img src="~/images/popular-08.jpg" alt="Warcraft">
-                        <h4>Warcraft<br><span>Легенда</span></h4>
-                        <ul>
-                            <li><i class="fa fa-star"></i> 4.8</li>
-                            <li><i class="fa fa-download"></i> 2.3M</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-12">
-                    <div class="main-button">
-                        <a asp-controller="Home" asp-action="Browse">Открыть популярные</a>
-                    </div>
+                }
+            </div>
+            <div class="col-lg-12">
+                <div class="main-button">
+                    <a asp-controller="Games" asp-action="Index">Открыть все игры</a>
                 </div>
             </div>
         </div>
@@ -160,7 +88,7 @@
     </div>
     <div class="col-lg-12">
         <div class="main-button">
-            <a asp-controller="Home" asp-action="Profile">Просмотреть вашу библиотеку</a>
+            <a asp-controller="Home" asp-action="PurchaseHistory">Просмотреть вашу библиотеку</a>
         </div>
     </div>
 </div>
@@ -190,20 +118,22 @@
                         <div class="mb-3">
                             <h5>Цена: <span id="gamePrice" style="color: #ec6090; font-weight: bold;"></span></h5>
                         </div>
-                        <div class="mt-4">
-                            <label for="paymentMethod" class="form-label">Способ оплаты:</label>
-                            <select class="form-select" id="paymentMethod" style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
-                                <option value="card">Банковская карта</option>
-                                <option value="paypal">PayPal</option>
-                                <option value="crypto">Криптовалюта</option>
-                            </select>
-                        </div>
+                        <form asp-controller="Games" asp-action="Purchase" method="post">
+                            <input type="hidden" id="gameId" name="gameId" value="">
+                            <div class="mt-3">
+                                <label for="email" class="form-label">Ваш E-mail:</label>
+                                <input type="email" class="form-control" id="email" name="email" required
+                                       style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary w-100"
+                                        style="background-color: #e75e8d; border: none;">
+                                    Купить
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer" style="border-top: 1px solid #444;">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #666; border: none;">Отмена</button>
-                <button type="button" class="btn btn-primary" style="background-color: #e75e8d; border: none;">Купить</button>
             </div>
         </div>
     </div>
@@ -220,50 +150,27 @@
 
             item.addEventListener('click', function() {
               // Get game details
+              const gameId = item.getAttribute('data-id');
               const gameImage = item.querySelector('img').src;
               const gameTitle = item.querySelector('h4').innerText.split('\n')[0];
               const gameGenre = item.querySelector('h4 span').innerText;
               const gameRating = item.querySelector('ul li:first-child').innerText.replace('★', '').trim();
               const gameDownloads = item.querySelector('ul li:last-child').innerText.replace('⬇', '').trim();
-
-              // Set price based on game (simplified for example)
-              const prices = {
-                'Fortnite': '1200 ₽',
-                'PubG': '1500 ₽',
-                'Dota2': '200 ₽',
-                'CS-GO': '900 ₽',
-                'Mini Craft': '800 ₽',
-                'Eagles Fly': '600 ₽',
-                'Warface': '450 ₽',
-                'Warcraft': '1800 ₽'
-              };
-
-              const price = prices[gameTitle] || '1000 ₽';
+              const gamePrice = item.getAttribute('data-price') + ' ₽';
 
               // Populate modal
+              document.getElementById('gameId').value = gameId;
               document.getElementById('gameImage').src = gameImage;
               document.getElementById('gameTitle').innerText = gameTitle;
               document.getElementById('gameGenre').innerText = gameGenre;
               document.getElementById('gameRating').innerText = gameRating;
               document.getElementById('gameDownloads').innerText = gameDownloads;
-              document.getElementById('gamePrice').innerText = price;
+              document.getElementById('gamePrice').innerText = gamePrice;
 
               // Show modal
               const purchaseModal = new bootstrap.Modal(document.getElementById('purchaseModal'));
               purchaseModal.show();
             });
-          });
-
-          // Handle purchase button click
-          document.querySelector('#purchaseModal .btn-primary').addEventListener('click', function() {
-            const gameTitle = document.getElementById('gameTitle').innerText;
-            const paymentMethod = document.getElementById('paymentMethod').value;
-
-            alert(`Спасибо за покупку игры "${gameTitle}" через ${paymentMethod}!`);
-
-            // Close modal
-            const purchaseModal = bootstrap.Modal.getInstance(document.getElementById('purchaseModal'));
-            purchaseModal.hide();
           });
         });
     </script>

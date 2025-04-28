@@ -1,88 +1,114 @@
-﻿@{
-    ViewData["Title"] = "Пополнить Steam";
+﻿@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "История покупок";
 }
 
-<div class="row">
+<div class="gaming-library history-page">
     <div class="col-lg-12">
-        <div class="heading-section">
-            <h4><em>Пополнить</em> Steam</h4>
+        <div class="heading-section mb-4">
+            <h4><em>Ваши</em> покупки</h4>
         </div>
-    </div>
-</div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
-    </div>
-}
+        <div class="purchase-overview" style="background-color: #27292a; border-radius: 23px; padding: 20px; margin-bottom: 30px;">
+            <div class="row">
+                <div class="col-md-8">
+                    <h5><i class="fa fa-info-circle me-2" style="color: #ec6090;"></i>Информация о покупках</h5>
+                    <p>Здесь отображаются все ваши покупки. Ключи активации также отправлены на указанный вами email.</p>
+                    <p>При возникновении проблем с активацией, пожалуйста, обратитесь в службу поддержки.</p>
+                </div>
+                <div class="col-md-4 text-end d-flex align-items-center justify-content-end">
+                    <div class="stats-box text-center me-3">
+                        <h4 style="color: #ec6090;">@Model.Count()</h4>
+                        <span>Всего покупок</span>
+                    </div>
+                    <div class="stats-box text-center">
+                        <h4 style="color: #ec6090;">@Model.Sum(o => o.Game?.Price ?? 0)₽</h4>
+                        <span>Общая сумма</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
-    </div>
-}
+        @if (!Model.Any())
+        {
+            <div class="empty-purchases" style="background-color: #27292a; border-radius: 23px; padding: 40px; text-align: center;">
+                <img src="/images/empty-cart.png" alt="Нет покупок" style="max-width: 150px; margin-bottom: 20px;">
+                <h5>Покупки не найдены</h5>
+                <p>Возможно, вы совершали покупки с другого устройства или использовали другой email.</p>
+                <div class="main-button mt-4">
+                    <a asp-controller="Games" asp-action="Index">Перейти в каталог</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="purchase-filters d-flex justify-content-between align-items-center mb-4" style="background-color: #27292a; border-radius: 23px; padding: 15px 20px;">
+                <div>
+                    <span class="me-2">Сортировать по:</span>
+                    <button class="btn btn-sm" style="background-color: #1f2122; color: #fff; margin-right: 5px;">Дате ↓</button>
+                    <button class="btn btn-sm" style="background-color: #1f2122; color: #fff;">Названию</button>
+                </div>
+                <div>
+                    <span class="badge bg-success me-2">Активные ключи: @Model.Count()</span>
+                </div>
+            </div>
 
-<div class="row">
-    <div class="col-lg-6">
-        <div class="steam-topup-form">
-            <form asp-controller="Steam" asp-action="TopUp" method="post">
-                <div class="form-group mb-4">
-                    <label class="mb-2">
-                        Логин Steam
-                        <span class="position-relative d-inline-block">
-                            <i class="fas fa-question-circle steam-help-icon"></i>
-                            <div class="steam-tooltip">
-                                <img src="~/images/steam-login-help.jpg" alt="Как найти логин Steam" class="tooltip-image">
+            <div class="purchases-container" style="background-color: #27292a; border-radius: 23px; padding: 20px;">
+                @foreach (var order in Model)
+                {
+                    <div class="purchase-item" style="border-bottom: 1px solid #444; padding: 15px 0; margin-bottom: 5px;">
+                        <div class="row align-items-center">
+                            <div class="col-md-1">
+                                <img src="@(string.IsNullOrEmpty(order.Game?.ImageUrl) ? "/images/game-01.jpg" : order.Game.ImageUrl)"
+                                     alt="@order.Game?.Title" class="img-fluid rounded" style="max-width: 60px;">
                             </div>
-                        </span>
-                    </label>
-                    <input type="text" name="steamId" class="form-control" placeholder="Ваш логин Steam" required>
-                </div>
-
-                <div class="form-group mb-4">
-                    <label class="mb-2">Сумма</label>
-                    <input type="number" name="amount" class="form-control" value="50" min="50" max="15000" id="amountInput" required>
-                    <div class="payment-options mt-3">
-                        <button type="button" class="btn btn-primary me-2">+ 100 ₽</button>
-                        <button type="button" class="btn btn-primary me-2">+ 500 ₽</button>
-                        <button type="button" class="btn btn-primary me-2">+ 1000 ₽</button>
+                            <div class="col-md-2">
+                                <h6 class="mb-0">@order.Game?.Title</h6>
+                                <small style="color: #ec6090;">@order.Game?.Genre</small>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="d-block text-muted">Дата покупки:</small>
+                                <span>@order.OrderDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="d-block text-muted">Ключ активации:</small>
+                                <div class="key-container" style="position: relative; background: #1f2122; padding: 6px 12px; border-radius: 5px; display: inline-block;">
+                                    <span class="key-text">@order.Key</span>
+                                    <button class="copy-btn" style="background: none; border: none; position: absolute; right: 5px; top: 6px; cursor: pointer;"
+                                            onclick="copyToClipboard('@order.Key')">
+                                        <i class="fa fa-copy" style="color: #ec6090;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="d-block text-muted">Статус:</small>
+                                <span class="badge @(order.IsCompleted ? "bg-success" : "bg-warning")">
+                                    @(order.IsCompleted ? "Завершено" : "В обработке")
+                                </span>
+                            </div>
+                            <div class="col-md-1 text-end">
+                                <span style="font-weight: bold; color: #ec6090;">@order.Game?.Price.ToString("C0")</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                }
+            </div>
 
-                <div class="range-slider mb-4">
-                    <input type="range" class="form-range" min="50" max="15000" step="50" value="50" id="rangeSlider">
-                    <div class="range-labels">
-                        <span>50₽</span>
-                        <span>15000₽</span>
-                    </div>
-                </div>
-
-                <div class="form-group mb-4">
-                    <label class="mb-2">E-mail для квитанции</label>
-                    <input type="email" name="email" class="form-control" placeholder="Ваш E-mail" required>
-                </div>
-
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary w-100 py-3">ПОПОЛНИТЬ</button>
-                </div>
-
-                <div class="small mt-3 text-muted">
-                    Нажимая кнопку пополнить, я принимаю условия Пользовательского Соглашения
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="info-panel">
-            <h5><i class="fa fa-info-circle me-2"></i>Информация об оплате</h5>
-            <p><i class="fa fa-check-circle me-2"></i> Минимальная сумма пополнения: 50₽</p>
-            <p><i class="fa fa-check-circle me-2"></i> Максимальная сумма пополнения: 15000₽</p>
-            <p><i class="fa fa-check-circle me-2"></i> Время зачисления средств: моментально</p>
-            <p><i class="fa fa-check-circle me-2"></i> Комиссия: 0%</p>
-            <p class="mt-4"><i class="fa fa-exclamation-circle me-2"></i> Указывайте только логин Steam. Мы пополняем аккаунты только через официальный сервис Steam.</p>
-        </div>
+            <div class="main-button mt-4 text-center">
+                <a asp-controller="Games" asp-action="Index">Перейти в каталог</a>
+            </div>
+        }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Ключ скопирован!');
+            }, function() {
+                alert('Не удалось скопировать ключ');
+            });
+        }
+    </script>
+}

@@ -23,7 +23,7 @@ namespace GameStore.Services
                 SteamId = steamId,
                 Email = email,
                 Amount = amount,
-                Date = DateTime.Now,
+                Date = DateTime.UtcNow,
                 IsCompleted = true
             };
 

@@ -32,7 +32,7 @@ namespace GameStore.Services
                 Email = email,
                 GameId = gameId,
                 Key = await GenerateGameKeyAsync(),
-                OrderDate = DateTime.Now,
+                OrderDate = DateTime.UtcNow, 
                 IsCompleted = true
             };
 

@@ -24,13 +24,10 @@
                         <li><img src="@(string.IsNullOrEmpty(order.Game?.ImageUrl) ? "/images/game-01.jpg" : order.Game.ImageUrl)" alt="@order.Game?.Title" class="templatemo-item"></li>
                         <li><h4>@order.Game?.Title</h4><span>@order.Game?.Genre</span></li>
                         <li><h4>Дата добавления</h4><span>@order.OrderDate.ToString("dd/MM/yyyy")</span></li>
-                        <li><h4>Ключ</h4><span>@order.Key</span></li>
-                        <li><h4>Статус</h4><span>@(order.IsCompleted ? "Завершено" : "В обработке")</span></li>
-                        <li>
-                            <div class="main-border-button @(order.IsCompleted ? "border-no-active" : "")">
-                                <a href="#">@(order.IsCompleted ? "Загружено" : "Загрузить")</a>
-                            </div>
+                        <li><h4>Ключ</h4><span>@order.Key</span>
                         </li>
+                        <li><h4>Статус</h4><span>@(order.IsCompleted ? "Завершено" : "В обработке")</span></li>
+                        <li><h4>Цена</h4><span>@order.Game?.Price.ToString("₽0")</span></li>
                     </ul>
                 </div>
             }
