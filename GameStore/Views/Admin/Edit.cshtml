@@ -1,0 +1,98 @@
+﻿@model Game
+@{
+    ViewData["Title"] = "Редактировать игру";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Редактировать</em> игру</h4>
+        </div>
+
+        <div class="game-form" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <form asp-controller="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label asp-for="Title" class="mb-2">Название</label>
+                            <input asp-for="Title" class="form-control" required>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label asp-for="Genre" class="mb-2">Жанр</label>
+                            <input asp-for="Genre" class="form-control" required>
+                            <span asp-validation-for="Genre" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group mb-4">
+                            <label asp-for="Description" class="mb-2">Описание</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group mb-4">
+                            <label asp-for="Price" class="mb-2">Цена (₽)</label>
+                            <input asp-for="Price" type="number" class="form-control" min="0" required>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group mb-4">
+                            <label asp-for="Rating" class="mb-2">Рейтинг (0-5)</label>
+                            <input asp-for="Rating" type="number" class="form-control" min="0" max="5" step="0.1" required>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group mb-4">
+                            <label asp-for="Downloads" class="mb-2">Загрузки (например: 2.3M)</label>
+                            <input asp-for="Downloads" class="form-control" required>
+                            <span asp-validation-for="Downloads" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group mb-4">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="mb-3">
+                                    <label class="mb-2">Текущее изображение:</label>
+                                    <div>
+                                        <img src="@Model.ImageUrl" alt="@Model.Title" style="max-width: 200px; max-height: 200px; border-radius: 10px;" />
+                                    </div>
+                                </div>
+                            }
+
+                            <label asp-for="ImageFile" class="mb-2">Изображение игры (оставьте пустым, чтобы сохранить текущее)</label>
+                            <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                            <small class="text-muted">Поддерживаются форматы JPG, PNG и GIF</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <div class="main-button">
+                                <a asp-controller="Admin" asp-action="Index">Назад</a>
+                            </div>
+                            <div class="main-button">
+                                <button type="submit">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

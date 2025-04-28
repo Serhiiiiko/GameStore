@@ -52,13 +52,13 @@
                         </div>
                         <!-- ***** Search End ***** -->
                         <!-- ***** Menu Start ***** -->
+                        <!-- In Views/Shared/_Layout.cshtml, update the navigation section -->
                         <ul class="nav">
                             <li><a asp-controller="Home" asp-action="Index" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">Главная</a></li>
-                            <li><a asp-controller="Home" asp-action="Browse" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Browse" ? "active" : "")">Каталог</a></li>
-                            <li><a asp-controller="Home" asp-action="Details" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Details" ? "active" : "")">Подробности</a></li>
-                            <li><a asp-controller="Home" asp-action="Streams" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Streams" ? "active" : "")">Стримы</a></li>
+                            <li><a asp-controller="Games" asp-action="Index" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Index" && ViewContext.RouteData.Values["Controller"].ToString() == "Games" ? "active" : "")">Каталог</a></li>
                             <li><a asp-controller="Home" asp-action="SteamTopUp" class="@(ViewContext.RouteData.Values["Action"].ToString() == "SteamTopUp" ? "active" : "")">Пополнить Steam</a></li>
-                            <li><a asp-controller="Home" asp-action="Profile" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Profile" ? "active" : "")">Профиль <img src="~/images/profile-header.jpg" alt=""></a></li>
+                            <li><a asp-controller="Admin" asp-action="Login" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Login" && ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active" : "")">Админ</a></li>
+                            <li><a asp-controller="Home" asp-action="PurchaseHistory" class="@(ViewContext.RouteData.Values["Action"].ToString() == "PurchaseHistory" ? "active" : "")">История покупок <img src="~/images/profile-header.jpg" alt=""></a></li>
                         </ul>
                         <a class="menu-trigger">
                             <span>Меню</span>

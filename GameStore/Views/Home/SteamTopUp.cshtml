@@ -10,52 +10,68 @@
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
 <div class="row">
     <div class="col-lg-6">
         <div class="steam-topup-form">
-            <div class="form-group mb-4">
-                <label class="mb-2">
-                    Логин Steam
-                    <span class="position-relative d-inline-block">
-                        <i class="fas fa-question-circle steam-help-icon"></i>
-                        <div class="steam-tooltip">
-                            <img src="~/images/steam-login-help.jpg" alt="Как найти логин Steam" class="tooltip-image">
-                        </div>
-                    </span>
-                </label>
-                <input type="text" class="form-control" placeholder="Ваш логин Steam">
-            </div>
-
-            <div class="form-group mb-4">
-                <label class="mb-2">Сумма</label>
-                <input type="number" class="form-control" value="50">
-                <div class="payment-options mt-3">
-                    <button class="btn btn-primary me-2">+ 100 ₽</button>
-                    <button class="btn btn-primary me-2">+ 500 ₽</button>
-                    <button class="btn btn-primary me-2">+ 1000 ₽</button>
+            <form asp-controller="Steam" asp-action="TopUp" method="post">
+                <div class="form-group mb-4">
+                    <label class="mb-2">
+                        Логин Steam
+                        <span class="position-relative d-inline-block">
+                            <i class="fas fa-question-circle steam-help-icon"></i>
+                            <div class="steam-tooltip">
+                                <img src="~/images/steam-login-help.jpg" alt="Как найти логин Steam" class="tooltip-image">
+                            </div>
+                        </span>
+                    </label>
+                    <input type="text" name="steamId" class="form-control" placeholder="Ваш логин Steam" required>
                 </div>
-            </div>
 
-            <div class="range-slider mb-4">
-                <input type="range" class="form-range" min="50" max="15000" step="50" value="50" id="rangeSlider">
-                <div class="range-labels">
-                    <span>50₽</span>
-                    <span>15000₽</span>
+                <div class="form-group mb-4">
+                    <label class="mb-2">Сумма</label>
+                    <input type="number" name="amount" class="form-control" value="50" min="50" max="15000" id="amountInput" required>
+                    <div class="payment-options mt-3">
+                        <button type="button" class="btn btn-primary me-2">+ 100 ₽</button>
+                        <button type="button" class="btn btn-primary me-2">+ 500 ₽</button>
+                        <button type="button" class="btn btn-primary me-2">+ 1000 ₽</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group mb-4">
-                <label class="mb-2">E-mail для квитанции</label>
-                <input type="email" class="form-control" placeholder="Ваш E-mail">
-            </div>
+                <div class="range-slider mb-4">
+                    <input type="range" class="form-range" min="50" max="15000" step="50" value="50" id="rangeSlider">
+                    <div class="range-labels">
+                        <span>50₽</span>
+                        <span>15000₽</span>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <button class="btn btn-primary w-100 py-3">ПОПОЛНИТЬ</button>
-            </div>
+                <div class="form-group mb-4">
+                    <label class="mb-2">E-mail для квитанции</label>
+                    <input type="email" name="email" class="form-control" placeholder="Ваш E-mail" required>
+                </div>
 
-            <div class="small mt-3 text-muted">
-                Нажимая кнопку пополнить, я принимаю условия Пользовательского Соглашения
-            </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-100 py-3">ПОПОЛНИТЬ</button>
+                </div>
+
+                <div class="small mt-3 text-muted">
+                    Нажимая кнопку пополнить, я принимаю условия Пользовательского Соглашения
+                </div>
+            </form>
         </div>
     </div>
 

@@ -27,7 +27,6 @@ namespace GameStore.Controllers
             }
             return View(game);
         }
-
         [HttpPost]
         public async Task<IActionResult> Purchase(int gameId, string email)
         {
@@ -46,7 +45,20 @@ namespace GameStore.Controllers
                     return RedirectToAction("Details", new { id = gameId });
                 }
 
-                await orderService.CreateOrderAsync(email, gameId);
+                var order = await orderService.CreateOrderAsync(email, gameId);
+
+                // Store order ID in cookie
+                var orderIds = Request.Cookies["UserOrders"]?.Split(',').ToList() ?? new List<string>();
+                orderIds.Add(order.Id.ToString());
+
+                // Save updated order IDs back to cookie (expires in 30 days)
+                Response.Cookies.Append("UserOrders", string.Join(",", orderIds), new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(30),
+                    IsEssential = true,
+                    SameSite = SameSiteMode.Lax
+                });
+
                 TempData["Success"] = "Покупка успешно завершена. Проверьте вашу почту для получения ключа.";
             }
             catch (Exception ex)

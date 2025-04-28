@@ -32,6 +32,8 @@ builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISteamTopUpService, SteamTopUpService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+// Добавить вместе с другими сервисами
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 

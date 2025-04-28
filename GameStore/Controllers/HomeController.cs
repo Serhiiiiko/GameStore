@@ -60,6 +60,60 @@ namespace GameStore.Controllers
             return View();
         }
 
+        public async Task<IActionResult> PurchaseHistory()
+        {
+            // Get order IDs from cookie
+            string orderIdsCookie = Request.Cookies["UserOrders"] ?? "";
+            List<int> orderIds = new List<int>();
+
+            if (!string.IsNullOrEmpty(orderIdsCookie))
+            {
+                // Parse order IDs from cookie
+                foreach (var idStr in orderIdsCookie.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (int.TryParse(idStr, out int id))
+                    {
+                        orderIds.Add(id);
+                    }
+                }
+            }
+
+            // If we have orders in cookies, fetch them
+            if (orderIds.Any())
+            {
+                var orderRepository = HttpContext.RequestServices.GetService<IOrderRepository>();
+                var orders = new List<Order>();
+
+                foreach (var id in orderIds)
+                {
+                    var order = await orderRepository.GetByIdAsync(id);
+                    if (order != null)
+                    {
+                        orders.Add(order);
+                    }
+                }
+
+                return View("PurchaseHistoryResult", orders);
+            }
+
+            // If no orders in cookies, show form to enter email as fallback
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PurchaseHistoryByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Пожалуйста, укажите email";
+                return View("PurchaseHistory");
+            }
+
+            var orderService = HttpContext.RequestServices.GetService<IOrderService>();
+            var orders = await orderService.GetOrdersByEmailAsync(email);
+
+            return View("PurchaseHistoryResult", orders);
+        }
         public IActionResult SteamTopUp()
         {
             return View();

@@ -10,14 +10,18 @@ namespace GameStore.Controllers
         private readonly IOrderRepository _orderRepository;
         private readonly ISteamTopUpRepository _steamTopUpRepository;
 
+        private readonly IFileService _fileService;
+
         public AdminController(
             IGameService gameService,
             IOrderRepository orderRepository,
-            ISteamTopUpRepository steamTopUpRepository)
+            ISteamTopUpRepository steamTopUpRepository,
+            IFileService fileService)
         {
             _gameService = gameService;
             _orderRepository = orderRepository;
             _steamTopUpRepository = steamTopUpRepository;
+            _fileService = fileService;
         }
 
         // Simple authentication check for demo purposes
@@ -71,7 +75,6 @@ namespace GameStore.Controllers
 
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(Game game)
         {
@@ -82,6 +85,12 @@ namespace GameStore.Controllers
 
             if (ModelState.IsValid)
             {
+                // Обработка загруженного файла
+                if (game.ImageFile != null)
+                {
+                    game.ImageUrl = await _fileService.SaveImageAsync(game.ImageFile);
+                }
+
                 await _gameService.CreateGameAsync(game);
                 return RedirectToAction("Index");
             }
@@ -115,6 +124,27 @@ namespace GameStore.Controllers
 
             if (ModelState.IsValid)
             {
+                // Получаем существующую игру для проверки, было ли изображение заменено
+                var existingGame = await _gameService.GetGameByIdAsync(game.Id);
+
+                // Обработка загруженного файла
+                if (game.ImageFile != null)
+                {
+                    // Удаляем старое изображение, если оно существует
+                    if (!string.IsNullOrEmpty(existingGame.ImageUrl))
+                    {
+                        _fileService.DeleteImage(existingGame.ImageUrl);
+                    }
+
+                    // Сохраняем новое изображение
+                    game.ImageUrl = await _fileService.SaveImageAsync(game.ImageFile);
+                }
+                else
+                {
+                    // Если файл не загружен, сохраняем старый путь к изображению
+                    game.ImageUrl = existingGame.ImageUrl;
+                }
+
                 await _gameService.UpdateGameAsync(game);
                 return RedirectToAction("Index");
             }
@@ -144,6 +174,12 @@ namespace GameStore.Controllers
             if (!IsAuthenticated())
             {
                 return RedirectToAction("Login");
+            }
+
+            var game = await _gameService.GetGameByIdAsync(id);
+            if (game != null && !string.IsNullOrEmpty(game.ImageUrl))
+            {
+                _fileService.DeleteImage(game.ImageUrl);
             }
 
             await _gameService.DeleteGameAsync(id);

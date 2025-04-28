@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 namespace GameStore.Models
 {
@@ -22,5 +24,8 @@ namespace GameStore.Models
         public double Rating { get; set; }
 
         public string Downloads { get; set; } = string.Empty;
+
+        [NotMapped] // Это свойство не будет сохраняться в базе данных
+        public IFormFile ImageFile { get; set; }
     }
 }
