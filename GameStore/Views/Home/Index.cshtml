@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="heading-section">
-                <h4><em>Самые популярные</em> игры сейчас</h4>
+                <h4><em>Купить игры</em> сейчас</h4>
             </div>
             <div class="row">
                 <div class="col-lg-3 col-sm-6">
@@ -165,3 +165,106 @@
     </div>
 </div>
 <!-- ***** Gaming Library End ***** -->
+<!-- Purchase Modal -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #27292a; color: #fff; border-radius: 23px;">
+            <div class="modal-header" style="border-bottom: 1px solid #444;">
+                <h5 class="modal-title" id="purchaseModalLabel">Купить игру</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img id="gameImage" src="" alt="Game Image" class="img-fluid rounded" style="max-width: 100%;">
+                    </div>
+                    <div class="col-md-8">
+                        <h4 id="gameTitle"></h4>
+                        <p id="gameGenre" style="color: #ec6090;"></p>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <div><i class="fa fa-star" style="color: yellow;"></i> <span id="gameRating"></span></div>
+                                <div><i class="fa fa-download"></i> <span id="gameDownloads"></span></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <h5>Цена: <span id="gamePrice" style="color: #ec6090; font-weight: bold;"></span></h5>
+                        </div>
+                        <div class="mt-4">
+                            <label for="paymentMethod" class="form-label">Способ оплаты:</label>
+                            <select class="form-select" id="paymentMethod" style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
+                                <option value="card">Банковская карта</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="crypto">Криптовалюта</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #444;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #666; border: none;">Отмена</button>
+                <button type="button" class="btn btn-primary" style="background-color: #e75e8d; border: none;">Купить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Find all game items and make them clickable
+          const gameItems = document.querySelectorAll('.most-popular .item');
+
+          gameItems.forEach(function(item) {
+            item.style.cursor = 'pointer';
+
+            item.addEventListener('click', function() {
+              // Get game details
+              const gameImage = item.querySelector('img').src;
+              const gameTitle = item.querySelector('h4').innerText.split('\n')[0];
+              const gameGenre = item.querySelector('h4 span').innerText;
+              const gameRating = item.querySelector('ul li:first-child').innerText.replace('★', '').trim();
+              const gameDownloads = item.querySelector('ul li:last-child').innerText.replace('⬇', '').trim();
+
+              // Set price based on game (simplified for example)
+              const prices = {
+                'Fortnite': '1200 ₽',
+                'PubG': '1500 ₽',
+                'Dota2': '200 ₽',
+                'CS-GO': '900 ₽',
+                'Mini Craft': '800 ₽',
+                'Eagles Fly': '600 ₽',
+                'Warface': '450 ₽',
+                'Warcraft': '1800 ₽'
+              };
+
+              const price = prices[gameTitle] || '1000 ₽';
+
+              // Populate modal
+              document.getElementById('gameImage').src = gameImage;
+              document.getElementById('gameTitle').innerText = gameTitle;
+              document.getElementById('gameGenre').innerText = gameGenre;
+              document.getElementById('gameRating').innerText = gameRating;
+              document.getElementById('gameDownloads').innerText = gameDownloads;
+              document.getElementById('gamePrice').innerText = price;
+
+              // Show modal
+              const purchaseModal = new bootstrap.Modal(document.getElementById('purchaseModal'));
+              purchaseModal.show();
+            });
+          });
+
+          // Handle purchase button click
+          document.querySelector('#purchaseModal .btn-primary').addEventListener('click', function() {
+            const gameTitle = document.getElementById('gameTitle').innerText;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            alert(`Спасибо за покупку игры "${gameTitle}" через ${paymentMethod}!`);
+
+            // Close modal
+            const purchaseModal = bootstrap.Modal.getInstance(document.getElementById('purchaseModal'));
+            purchaseModal.hide();
+          });
+        });
+    </script>
+}
