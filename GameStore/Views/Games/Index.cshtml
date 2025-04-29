@@ -1,0 +1,218 @@
+﻿@model IEnumerable<Game>
+@{
+    ViewData["Title"] = "Game Catalog";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Browse</em> Our Games</h4>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="filters" style="background-color: #1f2122; border-radius: 23px; padding: 20px;">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <select id="genreFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
+                            <option value="">All Genres</option>
+                            <option value="Песочница">Песочница</option>
+                            <option value="Королевская битва">Королевская битва</option>
+                            <option value="Steam-X">Steam-X</option>
+                            <option value="RPG">RPG</option>
+                            <option value="Action">Action</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Sort By</label>
+                        <select id="sortFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="rating-desc">Rating: High to Low</option>
+                            <option value="name-asc">Name: A-Z</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Search</label>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search games..."
+                               style="background-color: #27292a; color: #fff; border: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Grid -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="games-grid" style="background-color: #1f2122; border-radius: 23px; padding: 30px;">
+            <div class="row game-container">
+                @foreach (var game in Model)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4 game-item"
+                         data-genre="@game.Genre"
+                         data-price="@game.Price"
+                         data-rating="@game.Rating"
+                         data-title="@game.Title.ToLower()">
+                        <div class="game-card" style="background-color: #27292a; border-radius: 23px; overflow: hidden; height: 100%;">
+                            <div class="position-relative">
+                                <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/popular-01.jpg" : game.ImageUrl)"
+                                     alt="@game.Title" class="w-100" style="height: 200px; object-fit: cover;">
+                                <div class="game-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(31,33,34,0.8); padding: 10px;">
+                                    <div class="d-flex justify-content-between">
+                                        <span style="color: #fff;">
+                                            <i class="fa fa-star" style="color: yellow;"></i> @game.Rating
+                                        </span>
+                                        <span style="color: #ec6090; font-weight: bold;">@game.Price.ToString("₽0")</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-info p-3">
+                                <h5 class="mb-2" style="color: #fff; font-weight: 600;">@game.Title</h5>
+                                <p class="mb-2" style="font-size: 14px; color: #666;">@game.Genre</p>
+                                <p class="game-description mb-3" style="font-size: 14px; color: #ccc; height: 60px; overflow: hidden;">
+                                    @(game.Description.Length > 100 ? game.Description.Substring(0, 100) + "..." : game.Description)
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a asp-controller="Games" asp-action="Details" asp-route-id="@game.Id"
+                                       class="btn" style="background-color: #1f2122; color: #fff; border-radius: 25px; padding: 8px 20px;">
+                                        Details
+                                    </a>
+                                    <button type="button" class="btn buy-now-btn" data-id="@game.Id"
+                                            style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 8px 20px;">
+                                        Buy Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- No Results Message -->
+<div id="noResults" class="row mt-4 d-none">
+    <div class="col-12 text-center">
+        <div style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <i class="fa fa-search" style="font-size: 48px; color: #ec6090;"></i>
+            <h4 class="mt-3" style="color: #fff;">No games found</h4>
+            <p style="color: #ccc;">Try adjusting your filters or search criteria</p>
+        </div>
+    </div>
+</div>
+
+<!-- Purchase Modal -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #27292a; color: #fff; border-radius: 23px;">
+            <div class="modal-header" style="border-bottom: 1px solid #444;">
+                <h5 class="modal-title">Purchase Game</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Games" asp-action="Purchase" method="post">
+                    <input type="hidden" id="modalGameId" name="gameId" value="">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Your Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" required
+                               style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn w-100"
+                                style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 10px 20px;">
+                            Complete Purchase
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Buy Now button click event
+            $('.buy-now-btn').click(function() {
+                const gameId = $(this).data('id');
+                $('#modalGameId').val(gameId);
+                $('#purchaseModal').modal('show');
+            });
+
+            // Filter functionality
+            function filterGames() {
+                const genre = $('#genreFilter').val().toLowerCase();
+                const sort = $('#sortFilter').val();
+                const search = $('#searchInput').val().toLowerCase();
+                let visibleCount = 0;
+
+                // Filter and sort games
+                $('.game-item').each(function() {
+                    const $this = $(this);
+                    const gameGenre = $this.data('genre').toLowerCase();
+                    const gameTitle = $this.data('title').toLowerCase();
+
+                    const genreMatch = genre === '' || gameGenre.includes(genre);
+                    const searchMatch = search === '' || gameTitle.includes(search);
+
+                    if (genreMatch && searchMatch) {
+                        $this.removeClass('d-none');
+                        visibleCount++;
+                    } else {
+                        $this.addClass('d-none');
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    $('#noResults').removeClass('d-none');
+                } else {
+                    $('#noResults').addClass('d-none');
+                }
+
+                // Sort games
+                const $gameContainer = $('.game-container');
+                const $games = $gameContainer.find('.game-item').get();
+
+                $games.sort(function(a, b) {
+                    const $a = $(a);
+                    const $b = $(b);
+
+                    if (sort === 'price-asc') {
+                        return $a.data('price') - $b.data('price');
+                    } else if (sort === 'price-desc') {
+                        return $b.data('price') - $a.data('price');
+                    } else if (sort === 'rating-desc') {
+                        return $b.data('rating') - $a.data('rating');
+                    } else if (sort === 'name-asc') {
+                        return $a.data('title').localeCompare($b.data('title'));
+                    }
+                    return 0;
+                });
+
+                $.each($games, function(i, item) {
+                    $gameContainer.append(item);
+                });
+            }
+
+            // Event listeners for filters
+            $('#genreFilter, #sortFilter').change(filterGames);
+            $('#searchInput').on('input', filterGames);
+
+            // Initialize
+            filterGames();
+        });
+    </script>
+}

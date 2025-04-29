@@ -31,7 +31,9 @@
                 {
                     <div class="col-lg-3 col-sm-6">
                         <div class="item" data-id="@game.Id" data-price="@game.Price">
-                            <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/popular-01.jpg" : game.ImageUrl)" alt="@game.Title">
+                            <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/popular-01.jpg" : game.ImageUrl)"
+                                 alt="@game.Title"
+                                 style="width: 225px; height: 190px; object-fit: cover; border-radius: 23px; display: block; margin: 0 auto;">
                             <h4>@game.Title<br><span>@game.Genre</span></h4>
                             <ul>
                                 <li><i class="fa fa-star"></i> @game.Rating</li>

@@ -826,9 +826,14 @@ Most Popular Style
   margin-bottom: 0px;
 }
 
-.most-popular .item img {
-  border-radius: 23px;
-}
+    .most-popular .item img {
+        width: 195px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 23px;
+        margin: 0 auto;
+        display: block;
+    }
 
 .most-popular .item h4 {
   font-size: 15px;
