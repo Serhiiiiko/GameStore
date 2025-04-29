@@ -27,7 +27,7 @@
                 <h4><em>Купить игры</em> сейчас</h4>
             </div>
             <div class="row">
-                @foreach (var game in Model)
+                @foreach (var game in Model.Take(8))
                 {
                     <div class="col-lg-3 col-sm-6">
                         <div class="item" data-id="@game.Id" data-price="@game.Price">
