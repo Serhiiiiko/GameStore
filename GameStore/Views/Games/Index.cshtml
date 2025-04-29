@@ -1,26 +1,27 @@
-﻿@model IEnumerable<Game>
+﻿
+@model IEnumerable<Game>
 @{
-    ViewData["Title"] = "Game Catalog";
+    ViewData["Title"] = "Каталог игр";
 }
 
 <div class="row">
     <div class="col-lg-12">
         <div class="heading-section">
-            <h4><em>Browse</em> Our Games</h4>
+            <h4><em>Просмотр</em> наших игр</h4>
         </div>
     </div>
 </div>
 
-<!-- Filter Section -->
+<!-- Раздел фильтров -->
 <div class="row mb-4">
     <div class="col-lg-12">
         <div class="filters" style="background-color: #1f2122; border-radius: 23px; padding: 20px;">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Genre</label>
+                        <label>Жанр</label>
                         <select id="genreFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
-                            <option value="">All Genres</option>
+                            <option value="">Все жанры</option>
                             <option value="Песочница">Песочница</option>
                             <option value="Королевская битва">Королевская битва</option>
                             <option value="Steam-X">Steam-X</option>
@@ -31,19 +32,19 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Sort By</label>
+                        <label>Сортировка</label>
                         <select id="sortFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                            <option value="rating-desc">Rating: High to Low</option>
-                            <option value="name-asc">Name: A-Z</option>
+                            <option value="price-asc">Цена: по возрастанию</option>
+                            <option value="price-desc">Цена: по убыванию</option>
+                            <option value="rating-desc">Рейтинг: по убыванию</option>
+                            <option value="name-asc">Название: А-Я</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Search</label>
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search games..."
+                        <label>Поиск</label>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Поиск игр..."
                                style="background-color: #27292a; color: #fff; border: none;">
                     </div>
                 </div>
@@ -52,7 +53,7 @@
     </div>
 </div>
 
-<!-- Game Grid -->
+<!-- Сетка игр -->
 <div class="row">
     <div class="col-lg-12">
         <div class="games-grid" style="background-color: #1f2122; border-radius: 23px; padding: 30px;">
@@ -86,11 +87,11 @@
                                 <div class="d-flex justify-content-between">
                                     <a asp-controller="Games" asp-action="Details" asp-route-id="@game.Id"
                                        class="btn" style="background-color: #1f2122; color: #fff; border-radius: 25px; padding: 8px 20px;">
-                                        Details
+                                        Подробнее
                                     </a>
                                     <button type="button" class="btn buy-now-btn" data-id="@game.Id"
                                             style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 8px 20px;">
-                                        Buy Now
+                                        Купить
                                     </button>
                                 </div>
                             </div>
@@ -102,37 +103,37 @@
     </div>
 </div>
 
-<!-- No Results Message -->
+<!-- Сообщение об отсутствии результатов -->
 <div id="noResults" class="row mt-4 d-none">
     <div class="col-12 text-center">
         <div style="background-color: #27292a; border-radius: 23px; padding: 30px;">
             <i class="fa fa-search" style="font-size: 48px; color: #ec6090;"></i>
-            <h4 class="mt-3" style="color: #fff;">No games found</h4>
-            <p style="color: #ccc;">Try adjusting your filters or search criteria</p>
+            <h4 class="mt-3" style="color: #fff;">Игры не найдены</h4>
+            <p style="color: #ccc;">Попробуйте изменить параметры фильтра или поискового запроса</p>
         </div>
     </div>
 </div>
 
-<!-- Purchase Modal -->
+<!-- Модальное окно покупки -->
 <div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #27292a; color: #fff; border-radius: 23px;">
             <div class="modal-header" style="border-bottom: 1px solid #444;">
-                <h5 class="modal-title">Purchase Game</h5>
+                <h5 class="modal-title">Покупка игры</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form asp-controller="Games" asp-action="Purchase" method="post">
                     <input type="hidden" id="modalGameId" name="gameId" value="">
                     <div class="mb-3">
-                        <label for="email" class="form-label">Your Email:</label>
+                        <label for="email" class="form-label">Ваш Email:</label>
                         <input type="email" class="form-control" id="email" name="email" required
                                style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
                     </div>
                     <div class="mt-4">
                         <button type="submit" class="btn w-100"
                                 style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 10px 20px;">
-                            Complete Purchase
+                            Завершить покупку
                         </button>
                     </div>
                 </form>
@@ -144,21 +145,21 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Buy Now button click event
+            // Обработка клика на кнопку "Купить"
             $('.buy-now-btn').click(function() {
                 const gameId = $(this).data('id');
                 $('#modalGameId').val(gameId);
                 $('#purchaseModal').modal('show');
             });
 
-            // Filter functionality
+            // Функционал фильтрации
             function filterGames() {
                 const genre = $('#genreFilter').val().toLowerCase();
                 const sort = $('#sortFilter').val();
                 const search = $('#searchInput').val().toLowerCase();
                 let visibleCount = 0;
 
-                // Filter and sort games
+                // Фильтр и сортировка игр
                 $('.game-item').each(function() {
                     const $this = $(this);
                     const gameGenre = $this.data('genre').toLowerCase();
@@ -175,14 +176,14 @@
                     }
                 });
 
-                // Show/hide no results message
+                // Показать/скрыть сообщение об отсутствии результатов
                 if (visibleCount === 0) {
                     $('#noResults').removeClass('d-none');
                 } else {
                     $('#noResults').addClass('d-none');
                 }
 
-                // Sort games
+                // Сортировка игр
                 const $gameContainer = $('.game-container');
                 const $games = $gameContainer.find('.game-item').get();
 
@@ -207,11 +208,11 @@
                 });
             }
 
-            // Event listeners for filters
+            // Обработчики событий для фильтров
             $('#genreFilter, #sortFilter').change(filterGames);
             $('#searchInput').on('input', filterGames);
 
-            // Initialize
+            // Инициализация
             filterGames();
         });
     </script>
