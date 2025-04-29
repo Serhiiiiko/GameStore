@@ -199,7 +199,8 @@
 	            window.location.hash = target;
 	            $(document).on("scroll", onScroll);
 	        });
-	    });
+		});
+
 	});
 
 	function onScroll(event){
