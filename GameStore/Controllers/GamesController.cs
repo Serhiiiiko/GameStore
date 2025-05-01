@@ -27,6 +27,7 @@ namespace GameStore.Controllers
             }
             return View(game);
         }
+        // In GameStore/Controllers/GamesController.cs
         [HttpPost]
         public async Task<IActionResult> Purchase(int gameId, string email)
         {
@@ -66,7 +67,8 @@ namespace GameStore.Controllers
                 TempData["Error"] = $"Ошибка при покупке: {ex.Message}";
             }
 
-            return RedirectToAction("Details", new { id = gameId });
+            // Changed from redirecting to Details to redirecting to Home page
+            return RedirectToAction("Index", "Home");
         }
     }
 }

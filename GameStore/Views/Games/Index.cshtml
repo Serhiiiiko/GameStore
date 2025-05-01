@@ -84,10 +84,7 @@
                                     @(game.Description.Length > 100 ? game.Description.Substring(0, 100) + "..." : game.Description)
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <a asp-controller="Games" asp-action="Details" asp-route-id="@game.Id"
-                                       class="btn" style="background-color: #1f2122; color: #fff; border-radius: 25px; padding: 8px 20px;">
-                                        Подробнее
-                                    </a>
+                                    
                                     <button type="button" class="btn buy-now-btn" data-id="@game.Id"
                                             style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 8px 20px;">
                                         Купить
