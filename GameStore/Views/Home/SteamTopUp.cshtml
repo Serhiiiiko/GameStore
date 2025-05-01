@@ -59,9 +59,62 @@
                     </div>
                 </div>
 
+                <!-- Добавляем выбор способа оплаты -->
+                <div class="form-group mb-4">
+                    <label class="mb-2">Способ оплаты</label>
+                    <div class="payment-methods">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
+                                    <input type="radio" name="paymentMethod" id="card-steam" value="card" class="d-none" checked>
+                                    <label for="card-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                        <i class="far fa-credit-card me-2" style="font-size: 24px; color: #e75e8d;"></i>
+                                        <span>Банковская карта</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
+                                    <input type="radio" name="paymentMethod" id="qiwi-steam" value="qiwi" class="d-none">
+                                    <label for="qiwi-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                        <i class="fas fa-wallet me-2" style="font-size: 24px; color: #99d4ff;"></i>
+                                        <span>QIWI Кошелек</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
+                                    <input type="radio" name="paymentMethod" id="webmoney-steam" value="webmoney" class="d-none">
+                                    <label for="webmoney-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                        <i class="fas fa-money-bill-alt me-2" style="font-size: 24px; color: #8bc34a;"></i>
+                                        <span>WebMoney</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
+                                    <input type="radio" name="paymentMethod" id="yoomoney-steam" value="yoomoney" class="d-none">
+                                    <label for="yoomoney-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                        <i class="fas fa-ruble-sign me-2" style="font-size: 24px; color: #ffeb3b;"></i>
+                                        <span>ЮMoney</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group mb-4">
                     <label class="mb-2">E-mail для квитанции</label>
                     <input type="email" name="email" class="form-control" placeholder="Ваш E-mail" required>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="agreeTerms-steam" required
+                           style="background-color: #1f2122; border: 1px solid #444;">
+                    <label class="form-check-label" for="agreeTerms-steam">
+                        <a href="#" style="color: #e75e8d;"> Я согласен с условиями пользовательского соглашения</a>
+                    </label>
                 </div>
 
                 <div class="form-group">
@@ -86,3 +139,58 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Functionality for the amount buttons
+            $('.payment-options button').on('click', function() {
+                var amount = parseInt($(this).text().replace(/[^\d]/g, ''));
+                var currentAmount = parseInt($('#amountInput').val());
+                var newAmount = currentAmount + amount;
+                if (newAmount > 15000) newAmount = 15000;
+                $('#amountInput').val(newAmount);
+                $('#rangeSlider').val(newAmount);
+            });
+
+            // Sync range slider with input
+            $('#rangeSlider').on('input', function() {
+                $('#amountInput').val($(this).val());
+            });
+
+            $('#amountInput').on('input', function() {
+                var value = parseInt($(this).val());
+                if (value < 50) value = 50;
+                if (value > 15000) value = 15000;
+                $('#rangeSlider').val(value);
+            });
+
+            // Style for payment method selection
+            $('.payment-method-item').click(function() {
+                // Remove active class from all items
+                $('.payment-method-item').css('border-color', 'transparent');
+                $(this).css('border-color', '#e75e8d');
+
+                // Select the radio button
+                $(this).find('input[type="radio"]').prop('checked', true);
+            });
+
+            // Initialize - highlight the first payment method
+            $('.payment-method-item:has(input:checked)').css('border-color', '#e75e8d');
+
+            // Add highlighting when hovering over payment methods
+            $('.payment-method-item').hover(
+                function() {
+                    if ($(this).find('input').is(':not(:checked)')) {
+                        $(this).css('border-color', '#666');
+                    }
+                },
+                function() {
+                    if ($(this).find('input').is(':not(:checked)')) {
+                        $(this).css('border-color', 'transparent');
+                    }
+                }
+            );
+        });
+    </script>
+}

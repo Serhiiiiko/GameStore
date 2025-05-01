@@ -14,7 +14,8 @@ namespace GameStore.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TopUp(string steamId, string email, decimal amount)
+        [HttpPost]
+        public async Task<IActionResult> TopUp(string steamId, string email, decimal amount, string paymentMethod)
         {
             if (string.IsNullOrEmpty(steamId) || string.IsNullOrEmpty(email) || amount <= 0)
             {
@@ -24,6 +25,10 @@ namespace GameStore.Controllers
 
             try
             {
+                // You can use the paymentMethod parameter here for further processing
+                // For now, we'll just store it in a comment to show it's being passed
+                // paymentMethod can be: "card", "qiwi", "webmoney", or "yoomoney"
+
                 await _steamTopUpService.CreateTopUpAsync(steamId, email, amount);
                 TempData["Success"] = "Пополнение успешно выполнено. Проверьте вашу почту для получения подтверждения.";
             }

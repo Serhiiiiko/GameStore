@@ -143,7 +143,11 @@ namespace GameStore.Controllers
         {
             return View();
         }
-
+        // Add to HomeController.cs
+        public IActionResult UserAgreement()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

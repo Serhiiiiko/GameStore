@@ -47,8 +47,10 @@
 }
 
     .btn-primary:hover {
-        background-color: #fff;
-        color: #e75e8d;
+        background-color: #d14476; /* Darker shade of the original pink */
+        color: #fff; /* Keep text white for contrast */
+        transform: translateY(-2px); /* Add a slight upward movement */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
     }
 
 .payment-options {
