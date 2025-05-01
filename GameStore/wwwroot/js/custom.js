@@ -23,18 +23,23 @@
         }
     });
 
-	$(window).scroll(function() {
-	  var scroll = $(window).scrollTop();
-	  var box = $('.header-text').height();
-	  var header = $('header').height();
+	$(window).scroll(function () {
+		var scroll = $(window).scrollTop();
 
-	  if (scroll >= box - header) {
-	    $("header").addClass("background-header");
-	  } else {
-	    $("header").removeClass("background-header");
-	  }
+		// Simple logic based on scroll position
+		if (scroll > 30) {
+			$("header.header-area").addClass("background-header");
+		} else {
+			$("header.header-area").removeClass("background-header");
+		}
 	});
-	
+
+	// Also add this to ensure header is always visible on page load
+	$(document).ready(function () {
+		// Force header to be visible
+		$("header.header-area").css("display", "block");
+	});
+
 	$('.filters ul li').click(function(){
         $('.filters ul li').removeClass('active');
         $(this).addClass('active');

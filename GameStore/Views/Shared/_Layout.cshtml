@@ -54,11 +54,11 @@
                         <!-- ***** Menu Start ***** -->
                         <!-- In Views/Shared/_Layout.cshtml, update the navigation section -->
                         <ul class="nav">
-                            <li><a asp-controller="Home" asp-action="Index" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">Главная</a></li>
-                            <li><a asp-controller="Games" asp-action="Index" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Index" && ViewContext.RouteData.Values["Controller"].ToString() == "Games" ? "active" : "")">Каталог</a></li>
-                            <li><a asp-controller="Home" asp-action="SteamTopUp" class="@(ViewContext.RouteData.Values["Action"].ToString() == "SteamTopUp" ? "active" : "")">Пополнить Steam</a></li>
-                            <li><a asp-controller="Admin" asp-action="Login" class="@(ViewContext.RouteData.Values["Action"].ToString() == "Login" && ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active" : "")">Админ</a></li>
-                            <li><a asp-controller="Home" asp-action="PurchaseHistory" class="@(ViewContext.RouteData.Values["Action"].ToString() == "PurchaseHistory" ? "active" : "")">История покупок <img src="~/images/profile-header.jpg" alt=""></a></li>
+                            <li><a asp-controller="Home" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">Главная</a></li>
+                            <li><a asp-controller="Games" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Games" ? "active" : "")">Каталог</a></li>
+                            <li><a asp-controller="Home" asp-action="SteamTopUp" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" && ViewContext.RouteData.Values["Action"].ToString() == "SteamTopUp" ? "active" : "")">Пополнить Steam</a></li>
+                            <li><a asp-controller="Admin" asp-action="Login" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active" : "")">Админ</a></li>
+                            <li><a asp-controller="Home" asp-action="PurchaseHistory" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" && (ViewContext.RouteData.Values["Action"].ToString() == "PurchaseHistory" || ViewContext.RouteData.Values["Action"].ToString() == "PurchaseHistoryResult") ? "active" : "")">История покупок <img src="~/images/profile-header.jpg" alt=""></a></li>
                         </ul>
                         <a class="menu-trigger">
                             <span>Меню</span>
@@ -100,6 +100,7 @@
     <script src="~/js/popup.js"></script>
     <script src="~/js/custom.js"></script>
     <script src="~/js/steam-topup.js"></script>
+    <script src="~/js/header-fix.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

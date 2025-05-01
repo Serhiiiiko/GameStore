@@ -333,6 +333,19 @@ Pre-loader Style
 Header Style
 --------------------------------------------- 
 */
+/* Force header to always be visible */
+/* Add longer transition for header animation */
+.header-area {
+    transition: all 0.6s ease-in-out !important;
+}
+
+/* Custom animation for the background header */
+.background-header {
+    transition: all 0.6s ease-in-out !important;
+    background-color: #1f2122 !important;
+    height: 70px !important;
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5) !important;
+}
 
 .background-header {
   background-color: #fff !important;
@@ -1282,7 +1295,7 @@ Featured Banner Style
   position: relative;
   max-height: 305px;
   overflow: hidden;
-  border-radius: 23px;;
+  border-radius: 23px;
 }
 
 .feature-banner .thumb a {
