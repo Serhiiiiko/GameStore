@@ -8,15 +8,18 @@ namespace GameStore.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IGameRepository _gameRepository;
         private readonly IEmailService _emailService;
+        private readonly ITelegramNotificationService _telegramService;
 
         public OrderService(
             IOrderRepository orderRepository,
             IGameRepository gameRepository,
-            IEmailService emailService)
+            IEmailService emailService,
+            ITelegramNotificationService telegramService)
         {
             _orderRepository = orderRepository;
             _gameRepository = gameRepository;
             _emailService = emailService;
+            _telegramService = telegramService;
         }
 
         public async Task<Order> CreateOrderAsync(string email, int gameId)
@@ -32,12 +35,20 @@ namespace GameStore.Services
                 Email = email,
                 GameId = gameId,
                 Key = await GenerateGameKeyAsync(),
-                OrderDate = DateTime.UtcNow, 
+                OrderDate = DateTime.UtcNow,
                 IsCompleted = true
             };
 
             var createdOrder = await _orderRepository.CreateAsync(order);
+
+            // Load the associated Game for the notification
+            createdOrder.Game = game;
+
+            // Send email confirmation
             await SendOrderConfirmationEmailAsync(createdOrder);
+
+            // Send notification to Telegram
+            await _telegramService.SendGamePurchaseNotificationAsync(createdOrder);
 
             return createdOrder;
         }

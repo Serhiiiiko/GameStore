@@ -35,6 +35,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // Добавить вместе с другими сервисами
 builder.Services.AddScoped<IFileService, FileService>();
 
+builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline

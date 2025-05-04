@@ -7,13 +7,16 @@ namespace GameStore.Services
     {
         private readonly ISteamTopUpRepository _steamTopUpRepository;
         private readonly IEmailService _emailService;
+        private readonly ITelegramNotificationService _telegramService;
 
         public SteamTopUpService(
             ISteamTopUpRepository steamTopUpRepository,
-            IEmailService emailService)
+            IEmailService emailService,
+            ITelegramNotificationService telegramService)
         {
             _steamTopUpRepository = steamTopUpRepository;
             _emailService = emailService;
+            _telegramService = telegramService;
         }
 
         public async Task<SteamTopUp> CreateTopUpAsync(string steamId, string email, decimal amount)
@@ -28,7 +31,12 @@ namespace GameStore.Services
             };
 
             var createdTopUp = await _steamTopUpRepository.CreateAsync(topUp);
+
+            // Send email confirmation
             await SendTopUpConfirmationEmailAsync(createdTopUp);
+
+            // Send notification to Telegram
+            await _telegramService.SendSteamTopUpNotificationAsync(createdTopUp);
 
             return createdTopUp;
         }

@@ -113,7 +113,7 @@
                     <input class="form-check-input" type="checkbox" id="agreeTerms-steam" required
                            style="background-color: #1f2122; border: 1px solid #444;">
                     <label class="form-check-label" for="agreeTerms-steam">
-                        <a href="#" style="color: #e75e8d;"> Я согласен с условиями пользовательского соглашения</a>
+                        <a asp-controller="Home" asp-action="UserAgreement" style="color: #e75e8d;">Я согласен с условиями пользовательского соглашения</a>
                     </label>
                 </div>
 
@@ -122,7 +122,7 @@
                 </div>
 
                 <div class="small mt-3 text-muted">
-                    Нажимая кнопку пополнить, я принимаю условия Пользовательского Соглашения
+                    Нажимая кнопку пополнить, я принимаю условия <a asp-controller="Home" asp-action="UserAgreement">Пользовательского Соглашения</a>
                 </div>
             </form>
         </div>
