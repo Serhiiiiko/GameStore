@@ -39,7 +39,7 @@ namespace GameStore.Controllers
         public IActionResult Login(string username, string password)
         {
             // Simple auth for demo
-            if (username == "admin" && password == "admin123")
+            if (username == "admin" && password == "admin654123")
             {
                 HttpContext.Session.SetString("AdminAuthenticated", "true");
                 return RedirectToAction("Index");

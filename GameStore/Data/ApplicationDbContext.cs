@@ -25,7 +25,7 @@ namespace GameStore.Data
                 {
                     Id = 1,
                     Username = "admin",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin654123"),
                     Role = "Admin"
                 }
             );

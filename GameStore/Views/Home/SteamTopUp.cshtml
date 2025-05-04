@@ -43,23 +43,36 @@
 
                 <div class="form-group mb-4">
                     <label class="mb-2">Сумма</label>
-                    <input type="number" name="amount" class="form-control" value="50" min="50" max="15000" id="amountInput" required>
+                    <input type="number"
+                           name="amount"
+                           id="amountInput"
+                           class="form-control"
+                           value="50"
+                           min="50"
+                           max="15000"
+                           required />
                     <div class="payment-options mt-3">
-                        <button type="button" class="btn btn-primary me-2">+ 100 ₽</button>
-                        <button type="button" class="btn btn-primary me-2">+ 500 ₽</button>
-                        <button type="button" class="btn btn-primary me-2">+ 1000 ₽</button>
+                        <button type="button" class="btn btn-primary me-2" onclick="changeAmount(0)">+ 200 ₽</button>
+                        <button type="button" class="btn btn-primary me-2" onclick="changeAmount(0)">+ 1000 ₽</button>
+                        <button type="button" class="btn btn-primary me-2" onclick="changeAmount(0)">+ 2000 ₽</button>
                     </div>
                 </div>
 
                 <div class="range-slider mb-4">
-                    <input type="range" class="form-range" min="50" max="15000" step="50" value="50" id="rangeSlider">
+                    <input type="range"
+                           id="rangeSlider"
+                           class="form-range"
+                           min="50"
+                           max="15000"
+                           step="50"
+                           value="50" />
                     <div class="range-labels">
                         <span>50₽</span>
                         <span>15000₽</span>
                     </div>
                 </div>
 
-                <!-- Добавляем выбор способа оплаты -->
+                <!-- Способ оплаты -->
                 <div class="form-group mb-4">
                     <label class="mb-2">Способ оплаты</label>
                     <div class="payment-methods">
@@ -67,7 +80,7 @@
                             <div class="col-md-6 mb-3">
                                 <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
                                     <input type="radio" name="paymentMethod" id="card-steam" value="card" class="d-none" checked>
-                                    <label for="card-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                    <label for="card-steam" class="d-flex align-items-center mb-0">
                                         <i class="far fa-credit-card me-2" style="font-size: 24px; color: #e75e8d;"></i>
                                         <span>Банковская карта</span>
                                     </label>
@@ -76,7 +89,7 @@
                             <div class="col-md-6 mb-3">
                                 <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
                                     <input type="radio" name="paymentMethod" id="qiwi-steam" value="qiwi" class="d-none">
-                                    <label for="qiwi-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                    <label for="qiwi-steam" class="d-flex align-items-center mb-0">
                                         <i class="fas fa-wallet me-2" style="font-size: 24px; color: #99d4ff;"></i>
                                         <span>QIWI Кошелек</span>
                                     </label>
@@ -85,7 +98,7 @@
                             <div class="col-md-6 mb-3">
                                 <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
                                     <input type="radio" name="paymentMethod" id="webmoney-steam" value="webmoney" class="d-none">
-                                    <label for="webmoney-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                    <label for="webmoney-steam" class="d-flex align-items-center mb-0">
                                         <i class="fas fa-money-bill-alt me-2" style="font-size: 24px; color: #8bc34a;"></i>
                                         <span>WebMoney</span>
                                     </label>
@@ -94,7 +107,7 @@
                             <div class="col-md-6 mb-3">
                                 <div class="payment-method-item" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer; border: 2px solid transparent;">
                                     <input type="radio" name="paymentMethod" id="yoomoney-steam" value="yoomoney" class="d-none">
-                                    <label for="yoomoney-steam" class="d-flex align-items-center mb-0" style="cursor: pointer;">
+                                    <label for="yoomoney-steam" class="d-flex align-items-center mb-0">
                                         <i class="fas fa-ruble-sign me-2" style="font-size: 24px; color: #ffeb3b;"></i>
                                         <span>ЮMoney</span>
                                     </label>
@@ -110,10 +123,11 @@
                 </div>
 
                 <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="agreeTerms-steam" required
-                           style="background-color: #1f2122; border: 1px solid #444;">
+                    <input class="form-check-input" type="checkbox" id="agreeTerms-steam" required style="background-color: #1f2122; border: 1px solid #444;">
                     <label class="form-check-label" for="agreeTerms-steam">
-                        <a asp-controller="Home" asp-action="UserAgreement" style="color: #e75e8d;">Я согласен с условиями пользовательского соглашения</a>
+                        <a asp-controller="Home" asp-action="UserAgreement" style="color: #e75e8d;">
+                            Я согласен с условиями пользовательского соглашения
+                        </a>
                     </label>
                 </div>
 
@@ -122,7 +136,8 @@
                 </div>
 
                 <div class="small mt-3 text-muted">
-                    Нажимая кнопку пополнить, я принимаю условия <a asp-controller="Home" asp-action="UserAgreement">Пользовательского Соглашения</a>
+                    Нажимая кнопку пополнить, я принимаю условия
+                    <a asp-controller="Home" asp-action="UserAgreement">Пользовательского Соглашения</a>
                 </div>
             </form>
         </div>
@@ -131,66 +146,71 @@
     <div class="col-lg-6">
         <div class="info-panel">
             <h5><i class="fa fa-info-circle me-2"></i>Информация об оплате</h5>
-            <p><i class="fa fa-check-circle me-2"></i> Минимальная сумма пополнения: 50₽</p>
-            <p><i class="fa fa-check-circle me-2"></i> Максимальная сумма пополнения: 15000₽</p>
-            <p><i class="fa fa-check-circle me-2"></i> Время зачисления средств: моментально</p>
-            <p><i class="fa fa-check-circle me-2"></i> Комиссия: 0%</p>
-            <p class="mt-4"><i class="fa fa-exclamation-circle me-2"></i> Указывайте только логин Steam. Мы пополняем аккаунты только через официальный сервис Steam.</p>
+            <p><i class="fa fa-check-circle me-2"></i>Минимальная сумма пополнения: 50₽</p>
+            <p><i class="fa fa-check-circle me-2"></i>Максимальная сумма пополнения: 15000₽</p>
+            <p><i class="fa fa-check-circle me-2"></i>Время зачисления средств: моментально</p>
+            <p><i class="fa fa-check-circle me-2"></i>Комиссия: 0%</p>
+            <p class="mt-4">
+                <i class="fa fa-exclamation-circle me-2"></i>
+                Указывайте только логин Steam. Мы пополняем аккаунты только через официальный сервис Steam.
+            </p>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            // Functionality for the amount buttons
-            $('.payment-options button').on('click', function() {
-                var amount = parseInt($(this).text().replace(/[^\d]/g, ''));
-                var currentAmount = parseInt($('#amountInput').val());
-                var newAmount = currentAmount + amount;
-                if (newAmount > 15000) newAmount = 15000;
-                $('#amountInput').val(newAmount);
-                $('#rangeSlider').val(newAmount);
+        // Универсальная функция для изменения суммы
+        function changeAmount(delta) {
+            var input  = document.getElementById('amountInput');
+            var slider = document.getElementById('rangeSlider');
+
+            // Читаем текущее значение как число
+            var current = input.valueAsNumber;
+            if (isNaN(current)) {
+                current = Number(input.min) || 0;
+            }
+
+            // Границы из атрибутов
+            var min = Number(input.min)  || 0;
+            var max = Number(input.max)  || Number(slider.max) || Infinity;
+
+            // Вычисляем новое значение
+            var next = current + delta;
+            next = Math.max(min, Math.min(max, next));
+
+            // Устанавливаем в оба элемента
+            input.value  = next;
+            slider.value = next;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var input  = document.getElementById('amountInput');
+            var slider = document.getElementById('rangeSlider');
+
+            // Синхронизация: ползунок → инпут
+            slider.addEventListener('input', function() {
+                input.value = this.value;
             });
 
-            // Sync range slider with input
-            $('#rangeSlider').on('input', function() {
-                $('#amountInput').val($(this).val());
+            // Синхронизация: инпут → ползунок, с учётом min/max
+            input.addEventListener('input', function() {
+                var v = this.valueAsNumber;
+                if (isNaN(v) || v < Number(input.min)) v = Number(input.min);
+                if (v > Number(input.max)) v = Number(input.max);
+                this.value = v;
+                slider.value = v;
             });
 
-            $('#amountInput').on('input', function() {
-                var value = parseInt($(this).val());
-                if (value < 50) value = 50;
-                if (value > 15000) value = 15000;
-                $('#rangeSlider').val(value);
+            // Выбор способа оплаты: подсветка рамки
+            document.querySelectorAll('.payment-method-item').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.payment-method-item')
+                        .forEach(i => i.style.borderColor = 'transparent');
+                    this.style.borderColor = '#e75e8d';
+                    this.querySelector('input[type="radio"]').checked = true;
+                });
             });
-
-            // Style for payment method selection
-            $('.payment-method-item').click(function() {
-                // Remove active class from all items
-                $('.payment-method-item').css('border-color', 'transparent');
-                $(this).css('border-color', '#e75e8d');
-
-                // Select the radio button
-                $(this).find('input[type="radio"]').prop('checked', true);
-            });
-
-            // Initialize - highlight the first payment method
-            $('.payment-method-item:has(input:checked)').css('border-color', '#e75e8d');
-
-            // Add highlighting when hovering over payment methods
-            $('.payment-method-item').hover(
-                function() {
-                    if ($(this).find('input').is(':not(:checked)')) {
-                        $(this).css('border-color', '#666');
-                    }
-                },
-                function() {
-                    if ($(this).find('input').is(':not(:checked)')) {
-                        $(this).css('border-color', 'transparent');
-                    }
-                }
-            );
         });
     </script>
 }
