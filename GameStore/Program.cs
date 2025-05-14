@@ -40,10 +40,6 @@ builder.Services.AddScoped<IFileService, FileService>();
 
 // Configure rate limiting
 builder.Services.AddMemoryCache();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
-builder.Services.AddInMemoryRateLimiting();
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
 
@@ -59,7 +55,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseIpRateLimiting();
+
 app.UseRouting();
 app.UseSession();
 

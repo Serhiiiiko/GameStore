@@ -143,7 +143,11 @@ namespace GameStore.Controllers
         {
             return View();
         }
-        // Add to HomeController.cs
+        // Add this method to your HomeController.cs file
+        public IActionResult PaymentAndDelivery()
+        {
+            return View();
+        }
         public IActionResult UserAgreement()
         {
             return View();

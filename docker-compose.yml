@@ -25,9 +25,9 @@ services:
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=gamestore;Username=postgres;Password=postgres
       - Email__Host=smtp.gmail.com
       - Email__Port=587
-      - Email__Sender=bebaccoun@gmail.com
-      - Email__Username=bebaccoun@gmail.com
-      - Email__Password=postgres
+      - Email__Sender=levwerlop@gmail.com
+      - Email__Username=levwerlop@gmail.com
+      - Email__Password=xxhnbnbdqnmtitov
       - ASPNETCORE_URLS=http://+:8080
     ports:
       - "8080:8080"

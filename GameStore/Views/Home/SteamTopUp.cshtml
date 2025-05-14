@@ -160,49 +160,85 @@
 
 @section Scripts {
     <script>
-        // Универсальная функция для изменения суммы
-        function changeAmount(delta) {
-            var input  = document.getElementById('amountInput');
-            var slider = document.getElementById('rangeSlider');
+            document.addEventListener('DOMContentLoaded', function () {
+            // Get references to the form elements
+            const amountSlider = document.querySelector('input[type="range"]');
+            const amountInput = document.querySelector('input[type="number"]');
 
-            // Читаем текущее значение как число
-            var current = input.valueAsNumber;
-            if (isNaN(current)) {
-                current = Number(input.min) || 0;
+            // Remove any existing event listeners by cloning and replacing elements
+            const paymentButtons = document.querySelectorAll('.payment-options button');
+            paymentButtons.forEach(button => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+            });
+
+            // Get fresh references after replacement
+            const freshButtons = document.querySelectorAll('.payment-options button');
+
+            if (amountSlider && amountInput) {
+                // Update input when slider changes
+                amountSlider.addEventListener('input', function () {
+                    amountInput.value = this.value;
+                });
+
+                // Update slider when input changes
+                amountInput.addEventListener('input', function () {
+                    // Ensure value is within min/max bounds
+                    let value = parseInt(this.value) || 0;
+                    const min = parseInt(amountSlider.min);
+                    const max = parseInt(amountSlider.max);
+
+                    if (value < min) {
+                        value = min;
+                        this.value = min;
+                    } else if (value > max) {
+                        value = max;
+                        this.value = max;
+                    }
+
+                    amountSlider.value = value;
+                });
             }
 
-            // Границы из атрибутов
-            var min = Number(input.min)  || 0;
-            var max = Number(input.max)  || Number(slider.max) || Infinity;
+            // Fixed event handlers for payment buttons
+            if (freshButtons.length > 0) {
+                freshButtons.forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        console.log("Button clicked");
 
-            // Вычисляем новое значение
-            var next = current + delta;
-            next = Math.max(min, Math.min(max, next));
+                        // Extract the amount from button text (e.g., "+ 100 ₽" -> 100)
+                        const amountText = this.textContent.trim();
+                        const match = amountText.match(/\+ (\d+) ₽/);
 
-            // Устанавливаем в оба элемента
-            input.value  = next;
-            slider.value = next;
-        }
+                        if (match && match[1]) {
+                            // Parse the exact increment amount from the button text
+                            const incrementAmount = parseInt(match[1]);
+                            console.log("Increment amount:", incrementAmount);
 
+                            // Get current value directly from input
+                            let currentAmount = parseInt(amountInput.value) || 0;
+                            console.log("Current amount:", currentAmount);
+
+                            // Calculate new amount
+                            let newAmount = currentAmount + incrementAmount;
+                            console.log("New amount:", newAmount);
+
+                            // Ensure it doesn't exceed maximum
+                            const max = parseInt(amountSlider.max);
+                            if (newAmount > max) {
+                                newAmount = max;
+                            }
+
+                            // Update input and slider
+                            amountInput.value = newAmount;
+                            amountSlider.value = newAmount;
+                        }
+                    });
+                });
+            }
+        });
         document.addEventListener('DOMContentLoaded', function() {
-            var input  = document.getElementById('amountInput');
-            var slider = document.getElementById('rangeSlider');
-
-            // Синхронизация: ползунок → инпут
-            slider.addEventListener('input', function() {
-                input.value = this.value;
-            });
-
-            // Синхронизация: инпут → ползунок, с учётом min/max
-            input.addEventListener('input', function() {
-                var v = this.valueAsNumber;
-                if (isNaN(v) || v < Number(input.min)) v = Number(input.min);
-                if (v > Number(input.max)) v = Number(input.max);
-                this.value = v;
-                slider.value = v;
-            });
-
-            // Выбор способа оплаты: подсветка рамки
             document.querySelectorAll('.payment-method-item').forEach(function(item) {
                 item.addEventListener('click', function() {
                     document.querySelectorAll('.payment-method-item')

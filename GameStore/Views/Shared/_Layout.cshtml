@@ -69,11 +69,12 @@
         </div>
     </div>
 
+    <!-- Update this section in _Layout.cshtml (around line 160) -->
     <footer>
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <p>Авторское право © @DateTime.Now.Year - <a asp-controller="Home" asp-action="Index">Магазин Игр</a> - <a asp-controller="Home" asp-action="Privacy">Политика конфиденциальности</a> - <a asp-controller="Home" asp-action="UserAgreement">Пользовательское соглашение</a></p>
+                    <p>Авторское право © @DateTime.Now.Year - <a asp-controller="Home" asp-action="Index">Магазин Игр</a> - <a asp-controller="Home" asp-action="Privacy">Политика конфиденциальности</a> - <a asp-controller="Home" asp-action="UserAgreement">Пользовательское соглашение</a> - <a asp-controller="Home" asp-action="PaymentAndDelivery">Оплата и доставка</a></p>
                 </div>
             </div>
         </div>
@@ -89,6 +90,15 @@
     <script src="~/js/custom.js"></script>
     <script src="~/js/steam-topup.js"></script>
     <script src="~/js/header-fix.js"></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DH3ESSMD7C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-DH3ESSMD7C');
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

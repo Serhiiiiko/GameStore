@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "Оплата и доставка";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Оплата</em> и доставка</h4>
+        </div>
+
+        <div class="content-section" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <div class="section">
+                <h5 class="mb-4" style="color: #ec6090;">Процесс покупки</h5>
+                <p>Уважаемые покупатели, процесс покупки товара в нашем магазине максимально прост:</p>
+
+                <ol class="mt-4 mb-5" style="color: #ccc;">
+                    <li class="mb-2">Выберите интересующий вас товар.</li>
+                    <li class="mb-2">Ознакомьтесь со всей информацией о нём.</li>
+                    <li class="mb-2">Нажмите кнопку КУПИТЬ!</li>
+                </ol>
+            </div>
+
+            <div class="section mt-4">
+                <h5 class="mb-4" style="color: #ec6090;">Доставка</h5>
+                <p>После успешной оплаты вам автоматически придут средства на аккаунт или ключ активации на почту указанную при покупке. Теперь остается лишь активировать купленный товар.</p>
+            </div>
+
+            <div class="section mt-5">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="info-card" style="background-color: #1f2122; border-radius: 15px; padding: 20px; height: 100%;">
+                            <h6 style="color: #ec6090;"><i class="fa fa-credit-card me-2"></i> Способы оплаты</h6>
+                            <ul style="color: #ccc; padding-left: 20px; margin-top: 15px;">
+                                <li>Банковская карта</li>
+                                <li>QIWI Кошелек</li>
+                                <li>WebMoney</li>
+                                <li>ЮMoney</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="info-card" style="background-color: #1f2122; border-radius: 15px; padding: 20px; height: 100%;">
+                            <h6 style="color: #ec6090;"><i class="fa fa-clock me-2"></i> Время доставки</h6>
+                            <p style="color: #ccc; margin-top: 15px;">В большинстве случаев доставка происходит моментально после оплаты. В некоторых случаях может потребоваться до 10 минут.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section h5 {
+        font-weight: 600;
+    }
+
+    .info-card {
+        transition: all 0.3s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    ol li {
+        padding: 5px 0;
+    }
+</style>
