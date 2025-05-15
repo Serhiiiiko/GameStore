@@ -41,7 +41,8 @@ namespace GameStore.Data
                     Price = 1200,
                     ImageUrl = "/images/popular-01.jpg",
                     Rating = 4.8,
-                    Downloads = "2.3M"
+                    Downloads = "2.3M",
+                    Platform = PlatformType.Steam
                 },
                 new Game
                 {
@@ -52,7 +53,8 @@ namespace GameStore.Data
                     Price = 1500,
                     ImageUrl = "/images/popular-02.jpg",
                     Rating = 4.8,
-                    Downloads = "2.3M"
+                    Downloads = "2.3M",
+                    Platform = PlatformType.Origin
                 },
                 // Add more games here
                 new Game
@@ -64,7 +66,8 @@ namespace GameStore.Data
                     Price = 200,
                     ImageUrl = "/images/popular-03.jpg",
                     Rating = 4.8,
-                    Downloads = "2.3M"
+                    Downloads = "2.3M",
+                    Platform = PlatformType.Xbox
                 }
             );
         }

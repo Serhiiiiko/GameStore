@@ -22,9 +22,21 @@
                 <div class="item">
                     <ul>
                         <li><img src="@(string.IsNullOrEmpty(order.Game?.ImageUrl) ? "/images/game-01.jpg" : order.Game.ImageUrl)" alt="@order.Game?.Title" class="templatemo-item"></li>
-                        <li><h4>@order.Game?.Title</h4><span>@order.Game?.Genre</span></li>
+                        <li>
+                            <h4>@order.Game?.Title</h4>
+                            <span>@order.Game?.Genre</span>
+                            @if (order.Game != null)
+                            {
+                                <div class="platform-badge mt-2">
+                                    <span class="badge" style="background-color: @GetPlatformColor(order.Game.Platform); color: #fff;">
+                                        @order.Game.Platform
+                                    </span>
+                                </div>
+                            }
+                        </li>
                         <li><h4>Дата добавления</h4><span>@order.OrderDate.ToString("dd/MM/yyyy")</span></li>
-                        <li><h4>Ключ</h4><span>@order.Key</span>
+                        <li>
+                            <h4>Ключ</h4><span>@order.Key</span>
                         </li>
                         <li><h4>Статус</h4><span>@(order.IsCompleted ? "Завершено" : "В обработке")</span></li>
                         <li><h4>Цена</h4><span>@order.Game?.Price.ToString("₽0")</span></li>
@@ -38,3 +50,16 @@
         </div>
     </div>
 </div>
+
+@functions {
+    public string GetPlatformColor(PlatformType platform)
+    {
+        return platform switch
+        {
+            PlatformType.Steam => "#1b2838",
+            PlatformType.Origin => "#f56c2d",
+            PlatformType.Xbox => "#107c10",
+            _ => "#666666"
+        };
+    }
+}

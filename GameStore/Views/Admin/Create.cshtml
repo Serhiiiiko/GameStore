@@ -30,6 +30,15 @@
 
                     <div class="col-md-12">
                         <div class="form-group mb-4">
+                            <label asp-for="Platform" class="mb-2">Платформа</label>
+                            <select asp-for="Platform" class="form-control" asp-items="Html.GetEnumSelectList<PlatformType>()">
+                            </select>
+                            <span asp-validation-for="Platform" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group mb-4">
                             <label asp-for="Description" class="mb-2">Описание</label>
                             <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>

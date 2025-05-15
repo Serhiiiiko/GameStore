@@ -16,7 +16,7 @@
     <div class="col-lg-12">
         <div class="filters" style="background-color: #1f2122; border-radius: 23px; padding: 20px;">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Жанр</label>
                         <select id="genreFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
@@ -29,7 +29,18 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Платформа</label>
+                        <select id="platformFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
+                            <option value="">Все платформы</option>
+                            <option value="Steam">Steam</option>
+                            <option value="Origin">Origin</option>
+                            <option value="Xbox">Xbox</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Сортировка</label>
                         <select id="sortFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
@@ -40,7 +51,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Поиск</label>
                         <input type="text" id="searchInput" class="form-control" placeholder="Поиск игр..."
@@ -61,6 +72,7 @@
                 {
                     <div class="col-lg-4 col-md-6 mb-4 game-item"
                          data-genre="@game.Genre"
+                         data-platform="@game.Platform"
                          data-price="@game.Price"
                          data-rating="@game.Rating"
                          data-title="@game.Title.ToLower()">
@@ -80,11 +92,16 @@
                             <div class="game-info p-3">
                                 <h5 class="mb-2" style="color: #fff; font-weight: 600;">@game.Title</h5>
                                 <p class="mb-2" style="font-size: 14px; color: #666;">@game.Genre</p>
+                                <div class="platform-badge mb-2" style="font-size: 14px;">
+                                    <span class="badge" style="background-color: @GetPlatformColor(game.Platform); color: #fff;">
+                                        @game.Platform
+                                    </span>
+                                </div>
                                 <p class="game-description mb-3" style="font-size: 14px; color: #ccc; height: 60px; overflow: hidden;">
                                     @(game.Description.Length > 100 ? game.Description.Substring(0, 100) + "..." : game.Description)
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    
+
                                     <button type="button" class="btn buy-now-btn" data-id="@game.Id"
                                             style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 8px 20px;">
                                         Купить
@@ -125,6 +142,9 @@
                             <img id="modalGameImage" src="" alt="Game Image" class="img-fluid rounded mb-3" style="width: 100%; object-fit: cover; border-radius: 15px;">
                             <h5 id="modalGameTitle" class="mb-2"></h5>
                             <p id="modalGameGenre" style="color: #ec6090;"></p>
+                            <div class="platform-badge mb-2">
+                                <span id="modalGamePlatform" class="badge" style="background-color: #ec6090; color: #fff;"></span>
+                            </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div><i class="fa fa-star" style="color: yellow;"></i> <span id="modalGameRating"></span></div>
                             </div>
@@ -208,6 +228,19 @@
     </div>
 </div>
 
+@functions {
+    public string GetPlatformColor(PlatformType platform)
+    {
+        return platform switch
+        {
+            PlatformType.Steam => "#1b2838",
+            PlatformType.Origin => "#f56c2d",
+            PlatformType.Xbox => "#107c10",
+            _ => "#666666"
+        };
+    }
+}
+
 @section Scripts {
     <script>
         $(document).ready(function() {
@@ -220,6 +253,8 @@
                 const gameId = $(this).data('id');
                 const gameTitle = gameCard.find('h5').first().text();
                 const gameGenre = gameCard.find('p').first().text();
+                const gamePlatform = gameCard.find('.platform-badge .badge').text().trim();
+                const gamePlatformColor = gameCard.find('.platform-badge .badge').css('background-color');
                 const gamePrice = gameItem.data('price') + '₽';
                 const gameRating = gameItem.data('rating');
                 const gameImage = gameCard.find('img').attr('src');
@@ -228,6 +263,8 @@
                 $('#modalGameId').val(gameId);
                 $('#modalGameTitle').text(gameTitle);
                 $('#modalGameGenre').text(gameGenre);
+                $('#modalGamePlatform').text(gamePlatform);
+                $('#modalGamePlatform').css('background-color', gamePlatformColor);
                 $('#modalGamePrice').text(gamePrice);
                 $('#modalGameRating').text(gameRating);
                 $('#modalGameImage').attr('src', gameImage);
@@ -266,6 +303,7 @@
             // Функционал фильтрации
             function filterGames() {
                 const genre = $('#genreFilter').val().toLowerCase();
+                const platform = $('#platformFilter').val();
                 const sort = $('#sortFilter').val();
                 const search = $('#searchInput').val().toLowerCase();
                 let visibleCount = 0;
@@ -274,12 +312,14 @@
                 $('.game-item').each(function() {
                     const $this = $(this);
                     const gameGenre = $this.data('genre').toLowerCase();
+                    const gamePlatform = $this.data('platform');
                     const gameTitle = $this.data('title').toLowerCase();
 
                     const genreMatch = genre === '' || gameGenre.includes(genre);
+                    const platformMatch = platform === '' || gamePlatform === platform;
                     const searchMatch = search === '' || gameTitle.includes(search);
 
-                    if (genreMatch && searchMatch) {
+                    if (genreMatch && platformMatch && searchMatch) {
                         $this.removeClass('d-none');
                         visibleCount++;
                     } else {
@@ -320,7 +360,7 @@
             }
 
             // Обработчики событий для фильтров
-            $('#genreFilter, #sortFilter').change(filterGames);
+            $('#genreFilter, #platformFilter, #sortFilter').change(filterGames);
             $('#searchInput').on('input', filterGames);
 
             // Инициализация

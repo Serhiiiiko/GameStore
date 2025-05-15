@@ -27,4 +27,6 @@ RUN dotnet publish "./GameStore.csproj" -c $BUILD_CONFIGURATION -o /app/publish 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN chmod -R 777 wwwroot
+USER app
 ENTRYPOINT ["dotnet", "GameStore.dll"]

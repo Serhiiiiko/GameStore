@@ -25,6 +25,9 @@ namespace GameStore.Models
 
         public string Downloads { get; set; } = string.Empty;
 
+        [Required]
+        public PlatformType Platform { get; set; } = PlatformType.Steam;
+
         [NotMapped] // Это свойство не будет сохраняться в базе данных
         public IFormFile ImageFile { get; set; }
     }
