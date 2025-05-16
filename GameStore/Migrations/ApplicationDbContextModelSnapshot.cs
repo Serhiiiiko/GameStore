@@ -90,6 +90,10 @@ namespace GameStore.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Games");
@@ -104,7 +108,8 @@ namespace GameStore.Migrations
                             ImageUrl = "/images/popular-01.jpg",
                             Price = 1200m,
                             Rating = 4.7999999999999998,
-                            Title = "Fortnite"
+                            Title = "Fortnite",
+                            Platform = "Steam"
                         },
                         new
                         {
@@ -115,7 +120,8 @@ namespace GameStore.Migrations
                             ImageUrl = "/images/popular-02.jpg",
                             Price = 1500m,
                             Rating = 4.7999999999999998,
-                            Title = "PubG"
+                            Title = "PubG",
+                            Platform = "Steam"
                         },
                         new
                         {
@@ -126,7 +132,8 @@ namespace GameStore.Migrations
                             ImageUrl = "/images/popular-03.jpg",
                             Price = 200m,
                             Rating = 4.7999999999999998,
-                            Title = "Dota2"
+                            Title = "Dota2",
+                            Platform = "Steam"
                         });
                 });
 

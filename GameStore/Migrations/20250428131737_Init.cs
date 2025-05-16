@@ -41,7 +41,8 @@ namespace GameStore.Migrations
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     Rating = table.Column<double>(type: "double precision", nullable: false),
-                    Downloads = table.Column<string>(type: "text", nullable: false)
+                    Downloads = table.Column<string>(type: "text", nullable: false),
+                    Platform = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -95,12 +96,12 @@ namespace GameStore.Migrations
 
             migrationBuilder.InsertData(
                 table: "Games",
-                columns: new[] { "Id", "Description", "Downloads", "Genre", "ImageUrl", "Price", "Rating", "Title" },
+                columns: new[] { "Id", "Description", "Downloads", "Genre", "ImageUrl", "Price", "Rating", "Title", "Platform" },
                 values: new object[,]
                 {
-                    { 1, "Battle royale game with building mechanics", "2.3M", "Песочница", "/images/popular-01.jpg", 1200m, 4.7999999999999998, "Fortnite" },
-                    { 2, "Realistic battle royale shooter", "2.3M", "Королевская битва", "/images/popular-02.jpg", 1500m, 4.7999999999999998, "PubG" },
-                    { 3, "Competitive MOBA game", "2.3M", "Steam-X", "/images/popular-03.jpg", 200m, 4.7999999999999998, "Dota2" }
+                    { 1, "Battle royale game with building mechanics", "2.3M", "Песочница", "/images/popular-01.jpg", 1200m, 4.7999999999999998, "Fortnite", "Steam" },
+                    { 2, "Realistic battle royale shooter", "2.3M", "Королевская битва", "/images/popular-02.jpg", 1500m, 4.7999999999999998, "PubG", "Steam" },
+                    { 3, "Competitive MOBA game", "2.3M", "Steam-X", "/images/popular-03.jpg", 200m, 4.7999999999999998, "Dota2", "Steam" }
                 });
 
             migrationBuilder.CreateIndex(
