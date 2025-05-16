@@ -29,4 +29,8 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 RUN chmod -R 777 wwwroot
 USER app
-ENTRYPOINT ["dotnet", "GameStore.dll"]
+# Добавьте перед ENTRYPOINT в Dockerfile
+# В конце файла GameStore/Dockerfile
+# Заменяем ENTRYPOINT ["dotnet", "GameStore.dll"]
+# на следующее:
+ENTRYPOINT ["dotnet", "GameStore.dll", "--apply-migrations"]

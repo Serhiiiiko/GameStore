@@ -18,6 +18,10 @@ namespace GameStore.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Game>()
+    .Property(g => g.Platform)
+    .HasConversion<string>()
+    .HasDefaultValue(PlatformType.Steam);
 
             // Seed initial admin user with hashed password 'admin123'
             modelBuilder.Entity<AdminUser>().HasData(
