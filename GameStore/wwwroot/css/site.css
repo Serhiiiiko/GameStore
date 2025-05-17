@@ -1,24 +1,26 @@
-html {
-  font-size: 14px;
+/* Steam styling */
+.steam-theme .game-card {
+    border: 2px solid #1b2838;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    .steam-theme .game-card h5 {
+        color: #1b9ae4 !important;
+    }
+
+/* Xbox styling */
+.xbox-theme .game-card {
+    border: 2px solid #107c10;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    .xbox-theme .game-card h5 {
+        color: #107c10 !important;
+    }
+
+/* Origin styling */
+.origin-theme .game-card {
+    border: 2px solid #f56c2d;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-
+    .origin-theme .game-card h5 {
+        color: #f56c2d !important;
+    }

@@ -11,12 +11,46 @@
     </div>
 </div>
 
+<!-- Platform Tabs -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="platform-tabs" style="background-color: #1f2122; border-radius: 23px; padding: 20px;">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active platform-tab" data-platform="all" href="#"
+                       style="background-color: #27292a; color: #fff; margin-right: 10px; border-radius: 10px; padding: 10px 20px;">
+                        Все платформы
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link platform-tab" data-platform="Steam" href="#"
+                       style="background-color: #1b2838; color: #fff; margin-right: 10px; border-radius: 10px; padding: 10px 20px;">
+                        <i class="fab fa-steam-symbol me-2"></i>Steam
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link platform-tab" data-platform="Xbox" href="#"
+                       style="background-color: #107c10; color: #fff; margin-right: 10px; border-radius: 10px; padding: 10px 20px;">
+                        <i class="fab fa-xbox me-2"></i>Xbox
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link platform-tab" data-platform="Origin" href="#"
+                       style="background-color: #f56c2d; color: #fff; border-radius: 10px; padding: 10px 20px;">
+                        <i class="fas fa-dice-d6 me-2"></i>Origin
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <!-- Раздел фильтров -->
 <div class="row mb-4">
     <div class="col-lg-12">
         <div class="filters" style="background-color: #1f2122; border-radius: 23px; padding: 20px;">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label>Жанр</label>
                         <select id="genreFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
@@ -29,18 +63,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>Платформа</label>
-                        <select id="platformFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
-                            <option value="">Все платформы</option>
-                            <option value="Steam">Steam</option>
-                            <option value="Origin">Origin</option>
-                            <option value="Xbox">Xbox</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label>Сортировка</label>
                         <select id="sortFilter" class="form-control" style="background-color: #27292a; color: #fff; border: none;">
@@ -51,7 +74,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label>Поиск</label>
                         <input type="text" id="searchInput" class="form-control" placeholder="Поиск игр..."
@@ -63,14 +86,14 @@
     </div>
 </div>
 
-<!-- Сетка игр -->
+<!-- Сетка игр - новый стиль как на скриншоте -->
 <div class="row">
     <div class="col-lg-12">
         <div class="games-grid" style="background-color: #1f2122; border-radius: 23px; padding: 30px;">
             <div class="row game-container">
                 @foreach (var game in Model)
                 {
-                    <div class="col-lg-4 col-md-6 mb-4 game-item"
+                    <div class="col-lg-3 col-md-6 mb-4 game-item"
                          data-genre="@game.Genre"
                          data-platform="@game.Platform"
                          data-price="@game.Price"
@@ -80,31 +103,45 @@
                             <div class="position-relative">
                                 <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/popular-01.jpg" : game.ImageUrl)"
                                      alt="@game.Title" class="w-100" style="height: 200px; object-fit: cover;">
-                                <div class="game-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(31,33,34,0.8); padding: 10px;">
-                                    <div class="d-flex justify-content-between">
-                                        <span style="color: #fff;">
-                                            <i class="fa fa-star" style="color: yellow;"></i> @game.Rating
-                                        </span>
-                                        <span style="color: #ec6090; font-weight: bold;">@game.Price.ToString("₽0")</span>
+
+                                <!-- Platform badge styled like in the screenshot -->
+                                @if (game.Platform == PlatformType.Steam)
+                                {
+                                    <div class="platform-badge steam" style="position: absolute; top: 10px; right: 10px; background-color: #1b2838; color: white; padding: 5px 15px; border-radius: 5px;">
+                                        <i class="fab fa-steam-symbol me-1"></i> Steam
                                     </div>
+                                }
+                                else if (game.Platform == PlatformType.Xbox)
+                                {
+                                    <div class="platform-badge xbox" style="position: absolute; top: 10px; right: 10px; background-color: #107c10; color: white; padding: 5px 15px; border-radius: 5px;">
+                                        <i class="fab fa-xbox me-1"></i> Xbox
+                                    </div>
+                                }
+                                else if (game.Platform == PlatformType.Origin)
+                                {
+                                    <div class="platform-badge origin" style="position: absolute; top: 10px; right: 10px; background-color: #f56c2d; color: white; padding: 5px 15px; border-radius: 5px;">
+                                        <i class="fas fa-dice-d6 me-1"></i> Origin
+                                    </div>
+                                }
+
+                                <!-- Bottom overlay with star rating and price -->
+                                <div class="game-price-rating" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <i class="fa fa-star" style="color: yellow;"></i> <span style="color: #fff;">@game.Rating</span>
+                                    </div>
+                                    <div style="color: #ec6090; font-weight: bold;">₽@game.Price</div>
                                 </div>
                             </div>
-                            <div class="game-info p-3">
-                                <h5 class="mb-2" style="color: #fff; font-weight: 600;">@game.Title</h5>
-                                <p class="mb-2" style="font-size: 14px; color: #666;">@game.Genre</p>
-                                <div class="platform-badge mb-2" style="font-size: 14px;">
-                                    <span class="badge" style="background-color: @GetPlatformColor(game.Platform); color: #fff;">
-                                        @game.Platform
-                                    </span>
-                                </div>
-                                <p class="game-description mb-3" style="font-size: 14px; color: #ccc; height: 60px; overflow: hidden;">
-                                    @(game.Description.Length > 100 ? game.Description.Substring(0, 100) + "..." : game.Description)
+                            <div class="p-3">
+                                <h5 style="color: #fff; font-weight: 600; font-size: 18px; margin-bottom: 5px;">@game.Title</h5>
+                                <p style="color: #666; font-size: 14px; margin-bottom: 10px;">@game.Genre</p>
+                                <p style="color: #999; font-size: 14px; height: 40px; overflow: hidden; margin-bottom: 15px;">
+                                    @(game.Description?.Length > 60 ? game.Description.Substring(0, 60) + "..." : game.Description)
                                 </p>
-                                <div class="d-flex justify-content-between">
-
+                                <div class="text-center">
                                     <button type="button" class="btn buy-now-btn" data-id="@game.Id"
-                                            style="background-color: #ec6090; color: #fff; border-radius: 25px; padding: 8px 20px;">
-                                        Купить
+                                            style="background-color: @GetPlatformColor(game.Platform); color: #fff; border-radius: 25px; padding: 8px 30px; border: none; width: 100%;">
+                                        <i class="@GetPlatformIcon(game.Platform) me-2"></i>Купить
                                     </button>
                                 </div>
                             </div>
@@ -142,8 +179,8 @@
                             <img id="modalGameImage" src="" alt="Game Image" class="img-fluid rounded mb-3" style="width: 100%; object-fit: cover; border-radius: 15px;">
                             <h5 id="modalGameTitle" class="mb-2"></h5>
                             <p id="modalGameGenre" style="color: #ec6090;"></p>
-                            <div class="platform-badge mb-2">
-                                <span id="modalGamePlatform" class="badge" style="background-color: #ec6090; color: #fff;"></span>
+                            <div class="platform-badge mb-2" id="modalGamePlatformBadge">
+                                <!-- Platform badge will be inserted here via JS -->
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div><i class="fa fa-star" style="color: yellow;"></i> <span id="modalGameRating"></span></div>
@@ -154,6 +191,7 @@
                     <div class="col-md-8">
                         <form asp-controller="Games" asp-action="Purchase" method="post">
                             <input type="hidden" id="modalGameId" name="gameId" value="">
+                            <input type="hidden" id="modalPlatform" name="platform" value="">
 
                             <div class="mb-4">
                                 <label for="email" class="form-label">Ваш Email:</label>
@@ -215,7 +253,7 @@
                             </div>
 
                             <div class="mt-4">
-                                <button type="submit" class="btn w-100 py-3"
+                                <button type="submit" class="btn w-100 py-3" id="paymentButton"
                                         style="background-color: #ec6090; color: #fff; border-radius: 25px; font-size: 18px;">
                                     <i class="fas fa-shopping-cart me-2"></i> Оплатить
                                 </button>
@@ -236,7 +274,18 @@
             PlatformType.Steam => "#1b2838",
             PlatformType.Origin => "#f56c2d",
             PlatformType.Xbox => "#107c10",
-            _ => "#666666"
+            _ => "#ec6090"
+        };
+    }
+
+    public string GetPlatformIcon(PlatformType platform)
+    {
+        return platform switch
+        {
+            PlatformType.Steam => "fab fa-steam-symbol",
+            PlatformType.Origin => "fas fa-dice-d6",
+            PlatformType.Xbox => "fab fa-xbox",
+            _ => "fas fa-gamepad"
         };
     }
 }
@@ -253,24 +302,91 @@
                 const gameId = $(this).data('id');
                 const gameTitle = gameCard.find('h5').first().text();
                 const gameGenre = gameCard.find('p').first().text();
-                const gamePlatform = gameCard.find('.platform-badge .badge').text().trim();
-                const gamePlatformColor = gameCard.find('.platform-badge .badge').css('background-color');
+                const gamePlatform = gameItem.data('platform');
                 const gamePrice = gameItem.data('price') + '₽';
                 const gameRating = gameItem.data('rating');
                 const gameImage = gameCard.find('img').attr('src');
 
                 // Set modal values
                 $('#modalGameId').val(gameId);
+                $('#modalPlatform').val(gamePlatform);
                 $('#modalGameTitle').text(gameTitle);
                 $('#modalGameGenre').text(gameGenre);
-                $('#modalGamePlatform').text(gamePlatform);
-                $('#modalGamePlatform').css('background-color', gamePlatformColor);
                 $('#modalGamePrice').text(gamePrice);
                 $('#modalGameRating').text(gameRating);
                 $('#modalGameImage').attr('src', gameImage);
 
+                // Get platform styling
+                let platformColor, platformName, platformIcon;
+                switch(gamePlatform) {
+                    case 'Steam':
+                        platformColor = '#1b2838';
+                        platformName = 'Steam';
+                        platformIcon = 'fab fa-steam-symbol';
+                        break;
+                    case 'Xbox':
+                        platformColor = '#107c10';
+                        platformName = 'Xbox';
+                        platformIcon = 'fab fa-xbox';
+                        break;
+                    case 'Origin':
+                        platformColor = '#f56c2d';
+                        platformName = 'Origin';
+                        platformIcon = 'fas fa-dice-d6';
+                        break;
+                    default:
+                        platformColor = '#ec6090';
+                        platformName = '';
+                        platformIcon = 'fas fa-gamepad';
+                }
+
+                // Update platform badge in modal
+                if (platformName) {
+                    $('#modalGamePlatformBadge').html(`
+                        <span class="badge" style="background-color: ${platformColor}; color: #fff; padding: 5px 15px;">
+                            <i class="${platformIcon} me-1"></i> ${platformName}
+                        </span>
+                    `);
+                    $('.modal-title').text(`Покупка игры в ${platformName}`);
+                } else {
+                    $('#modalGamePlatformBadge').html('');
+                    $('.modal-title').text('Покупка игры');
+                }
+
+                // Update payment button color
+                $('#paymentButton').css('background-color', platformColor);
+
                 // Show modal
                 $('#purchaseModal').modal('show');
+            });
+
+            // Platform tab filtering
+            $('.platform-tab').click(function(e) {
+                e.preventDefault();
+
+                // Remove active class from all tabs
+                $('.platform-tab').removeClass('active');
+
+                // Add active class to clicked tab
+                $(this).addClass('active');
+
+                // Get selected platform
+                const platform = $(this).data('platform');
+
+                // Filter games by platform
+                $('.game-item').each(function() {
+                    const $this = $(this);
+                    const gamePlatform = $this.data('platform');
+
+                    if (platform === 'all' || gamePlatform === platform) {
+                        $this.removeClass('d-none');
+                    } else {
+                        $this.addClass('d-none');
+                    }
+                });
+
+                // Check if any games are visible
+                checkVisibleGames();
             });
 
             // Style for payment method selection
@@ -303,40 +419,33 @@
             // Функционал фильтрации
             function filterGames() {
                 const genre = $('#genreFilter').val().toLowerCase();
-                const platform = $('#platformFilter').val();
                 const sort = $('#sortFilter').val();
                 const search = $('#searchInput').val().toLowerCase();
-                let visibleCount = 0;
+                const activePlatform = $('.platform-tab.active').data('platform');
 
                 // Фильтр и сортировка игр
                 $('.game-item').each(function() {
                     const $this = $(this);
                     const gameGenre = $this.data('genre').toLowerCase();
-                    const gamePlatform = $this.data('platform');
                     const gameTitle = $this.data('title').toLowerCase();
+                    const gamePlatform = $this.data('platform');
 
                     const genreMatch = genre === '' || gameGenre.includes(genre);
-                    const platformMatch = platform === '' || gamePlatform === platform;
                     const searchMatch = search === '' || gameTitle.includes(search);
+                    const platformMatch = activePlatform === 'all' || gamePlatform === activePlatform;
 
-                    if (genreMatch && platformMatch && searchMatch) {
+                    if (genreMatch && searchMatch && platformMatch) {
                         $this.removeClass('d-none');
-                        visibleCount++;
                     } else {
                         $this.addClass('d-none');
                     }
                 });
 
-                // Показать/скрыть сообщение об отсутствии результатов
-                if (visibleCount === 0) {
-                    $('#noResults').removeClass('d-none');
-                } else {
-                    $('#noResults').addClass('d-none');
-                }
+                checkVisibleGames();
 
                 // Сортировка игр
                 const $gameContainer = $('.game-container');
-                const $games = $gameContainer.find('.game-item').get();
+                const $games = $gameContainer.find('.game-item:not(.d-none)').get();
 
                 $games.sort(function(a, b) {
                     const $a = $(a);
@@ -359,8 +468,18 @@
                 });
             }
 
+            function checkVisibleGames() {
+                // Показать/скрыть сообщение об отсутствии результатов
+                const visibleCount = $('.game-item:not(.d-none)').length;
+                if (visibleCount === 0) {
+                    $('#noResults').removeClass('d-none');
+                } else {
+                    $('#noResults').addClass('d-none');
+                }
+            }
+
             // Обработчики событий для фильтров
-            $('#genreFilter, #platformFilter, #sortFilter').change(filterGames);
+            $('#genreFilter, #sortFilter').change(filterGames);
             $('#searchInput').on('input', filterGames);
 
             // Инициализация
