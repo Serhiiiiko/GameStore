@@ -28,9 +28,13 @@ services:
       - Email__Sender=levwerlop@gmail.com
       - Email__Username=levwerlop@gmail.com
       - Email__Password=xxhnbnbdqnmtitov
+      - TelegramBot__Token=7515132156:AAGirNJH-cpOkikSv0DAzKZIsLLEZ6xs3rQ
+      - TelegramBot__ChatIds=5192243288,641673534
       - ASPNETCORE_URLS=http://+:8080
     ports:
       - "8080:8080"
+    volumes:
+      - ./uploads:/app/wwwroot/images/uploads
     restart: always
     networks:
       - gamestore-network
@@ -41,3 +45,4 @@ networks:
 
 volumes:
   postgres-data:
+  uploads:

@@ -1,14 +1,10 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
+# See https://aka.ms/customizecontainer to learn how to customize your debug container
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+USER app
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -18,19 +14,26 @@ COPY . .
 WORKDIR "/src/GameStore"
 RUN dotnet build "./GameStore.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./GameStore.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+
+# Switch to root to copy files and set permissions
+USER root
+
+# Copy published files
 COPY --from=publish /app/publish .
-RUN chmod -R 777 wwwroot
+
+# Create directory for uploaded images if it doesn't exist
+RUN mkdir -p wwwroot/images/uploads && \
+    chmod -R 755 wwwroot && \
+    chmod -R 777 wwwroot/images && \
+    chmod -R 777 wwwroot/images/uploads || true
+
+# Switch back to app user for security
 USER app
-# Добавьте перед ENTRYPOINT в Dockerfile
-# В конце файла GameStore/Dockerfile
-# Заменяем ENTRYPOINT ["dotnet", "GameStore.dll"]
-# на следующее:
-ENTRYPOINT ["dotnet", "GameStore.dll", "--apply-migrations"]
+
+ENTRYPOINT ["dotnet", "GameStore.dll"]
