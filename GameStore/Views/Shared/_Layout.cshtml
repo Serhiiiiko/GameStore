@@ -21,6 +21,143 @@
     <link rel="stylesheet" href="~/css/steam-topup.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
+
+    <!-- Стили для кнопки контактов -->
+    <style>
+        .contacts-btn {
+            background: linear-gradient(45deg, #ec6090, #d63384);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .contacts-btn:hover {
+                background: linear-gradient(45deg, #d63384, #ec6090);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(236, 96, 144, 0.4);
+                color: white;
+                text-decoration: none;
+            }
+
+        .contact-item {
+            background-color: #1f2122;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .contact-item:hover {
+                border-color: #ec6090;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 20px rgba(236, 96, 144, 0.3);
+            }
+
+            .contact-item .contact-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                margin-right: 15px;
+            }
+
+            .contact-item.email .contact-icon {
+                background: linear-gradient(45deg, #ea4335, #fbbc05);
+            }
+
+            .contact-item.telegram .contact-icon {
+                background: linear-gradient(45deg, #0088cc, #29b6f6);
+            }
+
+            .contact-item.github .contact-icon {
+                background: linear-gradient(45deg, #333, #555);
+            }
+
+            .contact-item.phone .contact-icon {
+                background: linear-gradient(45deg, #4caf50, #8bc34a);
+            }
+
+        .contact-details h6 {
+            color: #ec6090;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .contact-details p {
+            color: #ccc;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .modal-content {
+            background-color: #27292a !important;
+            border: none;
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #444;
+            background: linear-gradient(45deg, #ec6090, #d63384);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-title {
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-close-white {
+            filter: brightness(0) invert(1);
+        }
+
+        .copy-btn {
+            background-color: #ec6090;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .copy-btn:hover {
+                background-color: #d63384;
+                transform: scale(1.05);
+            }
+
+        .copied-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 9999;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+            .copied-message.show {
+                transform: translateX(0);
+            }
+    </style>
 </head>
 <body>
     <!-- ***** Preloader Start ***** -->
@@ -53,7 +190,7 @@
                             <span>Меню</span>
                         </a>
                     </nav>
-                </div> 
+                </div>
             </div>
         </div>
     </header>
@@ -69,20 +206,82 @@
         </div>
     </div>
 
-    <!-- Update this section in _Layout.cshtml (around line 160) -->
+    <!-- Обновленный footer -->
     <footer>
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <p>Авторское право © @DateTime.Now.Year - <a asp-controller="Home" asp-action="Index">Магазин Игр</a> - <a asp-controller="Home" asp-action="Privacy">Политика конфиденциальности</a> - <a asp-controller="Home" asp-action="UserAgreement">Пользовательское соглашение</a> - <a asp-controller="Home" asp-action="PaymentAndDelivery">Оплата и доставка</a></p>
                     <p>
-                        <strong>Контакты:</strong>
-                        <a href="mailto:levwerlop@gmail.com">levwerlop@gmail.com</a>
+                        <button class="contacts-btn" data-bs-toggle="modal" data-bs-target="#contactsModal">
+                            <i class="fas fa-address-book"></i>
+                            Контакты
+                        </button>
                     </p>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Модальное окно контактов -->
+    <div class="modal fade" id="contactsModal" tabindex="-1" aria-labelledby="contactsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactsModalLabel">
+                        <i class="fas fa-address-book me-2"></i>Наши контакты
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="contact-list">
+                        <!-- Email -->
+                        <div class="contact-item email" onclick="copyToClipboard('levwerlop@gmail.com', 'Email скопирован!')">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-details flex-grow-1">
+                                    <h6>Email</h6>
+                                    <p>levwerlop@gmail.com</p>
+                                </div>
+                                <button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('levwerlop@gmail.com', 'Email скопирован!')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Telegram -->
+                        <div class="contact-item telegram" onclick="openTelegram()">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon">
+                                    <i class="fab fa-telegram-plane"></i>
+                                </div>
+                                <div class="contact-details flex-grow-1">
+                                    <h6>Telegram</h6>
+                                    <p>Написать в Telegram</p>
+                                </div>
+                                <i class="fas fa-external-link-alt" style="color: #ccc;"></i>
+                            </div>
+                        </div>
+
+
+                    <div class="mt-4 text-center">
+                        <p style="color: #999; font-size: 14px;">
+                            <i class="fas fa-clock me-1"></i>
+                            Время ответа: обычно в течение 24 часов
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сообщение о копировании -->
+    <div class="copied-message" id="copiedMessage">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="copiedText"></span>
+    </div>
 
     <!-- Scripts -->
     <script src="~/vendor/jquery/jquery.min.js"></script>
@@ -94,7 +293,7 @@
     <script src="~/js/custom.js"></script>
     <script src="~/js/steam-topup.js"></script>
     <script src="~/js/header-fix.js"></script>
-    
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DH3ESSMD7C"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -103,6 +302,68 @@
 
         gtag('config', 'G-DH3ESSMD7C');
     </script>
+
+    <!-- JavaScript для контактов -->
+    <script>
+        // Функция копирования в буфер обмена
+        function copyToClipboard(text, message) {
+            navigator.clipboard.writeText(text).then(function() {
+                showCopiedMessage(message);
+            }, function(err) {
+                console.error('Ошибка копирования: ', err);
+                // Fallback для старых браузеров
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopiedMessage(message);
+                } catch (err) {
+                    console.error('Fallback: Ошибка копирования', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // Показать сообщение о копировании
+        function showCopiedMessage(message) {
+            const copiedMessage = document.getElementById('copiedMessage');
+            const copiedText = document.getElementById('copiedText');
+
+            copiedText.textContent = message;
+            copiedMessage.classList.add('show');
+
+            setTimeout(() => {
+                copiedMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        // Открыть Telegram
+        function openTelegram() {
+            // Замените на ваш телеграм username или ссылку
+            window.open('https://t.me/cyborgg_support', '_blank');
+        }
+
+        
+
+        // Анимация появления модального окна
+        document.getElementById('contactsModal').addEventListener('shown.bs.modal', function () {
+            const contactItems = document.querySelectorAll('.contact-item');
+            contactItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    item.style.transition = 'all 0.3s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
