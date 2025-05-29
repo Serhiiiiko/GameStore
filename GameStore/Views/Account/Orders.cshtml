@@ -1,0 +1,135 @@
+﻿@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "Мои покупки";
+}
+
+<div class="gaming-library">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Мои</em> покупки</h4>
+        </div>
+
+        <!-- Back to Dashboard -->
+        <div class="mb-4">
+            <a asp-controller="Account" asp-action="Dashboard" style="color: #ec6090;">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться в личный кабинет
+            </a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">
+                <p>У вас пока нет покупок. Посетите наш <a asp-controller="Games" asp-action="Index">каталог игр</a> и выберите что-нибудь интересное!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var order in Model)
+            {
+                <div class="item">
+                    <ul>
+                        <li>
+                            <img src="@(string.IsNullOrEmpty(order.Game?.ImageUrl) ? "/images/game-01.jpg" : order.Game.ImageUrl)"
+                                 alt="@order.Game?.Title" class="templatemo-item">
+                        </li>
+                        <li>
+                            <h4>@order.Game?.Title</h4>
+                            <span>@order.Game?.Genre</span>
+                            @if (order.Game != null)
+                            {
+                                <div class="platform-badge mt-2">
+                                    <span class="badge" style="background-color: @GetPlatformColor(order.Game.Platform); color: #fff;">
+                                        @order.Game.Platform
+                                    </span>
+                                </div>
+                            }
+                        </li>
+                        <li><h4>Дата покупки</h4><span>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span></li>
+                        <li>
+                            <h4>Ключ активации</h4>
+                            <span class="game-key" style="font-family: monospace; background-color: #1f2122; padding: 5px 10px; border-radius: 5px;">
+                                @order.Key
+                            </span>
+                        </li>
+                        <li>
+                            <h4>Статус</h4>
+                            <span class="badge @(order.IsCompleted ? "bg-success" : "bg-warning")">
+                                @(order.IsCompleted ? "Завершено" : "В обработке")
+                            </span>
+                        </li>
+                        <li>
+                            <h4>Цена</h4>
+                            <span style="color: #ec6090; font-weight: bold;">@order.Game?.Price.ToString("C0")</span>
+                        </li>
+                    </ul>
+                </div>
+            }
+
+            <!-- Summary -->
+            <div class="summary-section" style="background-color: #27292a; border-radius: 23px; padding: 20px; margin-top: 30px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 style="color: #ec6090;">Статистика покупок</h5>
+                        <p style="color: #ccc;">Всего игр: <strong>@Model.Count()</strong></p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h5 style="color: #ec6090;">Общая сумма</h5>
+                        <p style="color: #ccc; font-size: 24px; font-weight: bold;">
+                            @Model.Sum(o => o.Game?.Price ?? 0).ToString("C0")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="main-button mt-4">
+            <a asp-controller="Games" asp-action="Index">Перейти в каталог</a>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetPlatformColor(PlatformType platform)
+    {
+        return platform switch
+        {
+            PlatformType.Steam => "#1b2838",
+            PlatformType.Origin => "#f56c2d",
+            PlatformType.Xbox => "#107c10",
+            _ => "#666666"
+        };
+    }
+}
+
+<style>
+    .game-key {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .game-key:hover {
+            background-color: #2a2d2e !important;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        // Copy key to clipboard on click
+        document.querySelectorAll('.game-key').forEach(function(element) {
+            element.addEventListener('click', function() {
+                const key = this.textContent.trim();
+                navigator.clipboard.writeText(key).then(function() {
+                    // Show temporary success message
+                    const originalText = element.textContent;
+                    element.textContent = 'Скопировано!';
+                    element.style.backgroundColor = '#4caf50';
+
+                    setTimeout(function() {
+                        element.textContent = originalText;
+                        element.style.backgroundColor = '#1f2122';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+}

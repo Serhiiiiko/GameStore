@@ -22,7 +22,7 @@ namespace GameStore.Services
             _telegramService = telegramService;
         }
 
-        public async Task<Order> CreateOrderAsync(string email, int gameId)
+        public async Task<Order> CreateOrderAsync(string email, int gameId, int? userId = null)
         {
             var game = await _gameRepository.GetByIdAsync(gameId);
             if (game == null)
@@ -34,6 +34,7 @@ namespace GameStore.Services
             {
                 Email = email,
                 GameId = gameId,
+                UserId = userId,
                 Key = await GenerateGameKeyAsync(),
                 OrderDate = DateTime.UtcNow,
                 IsCompleted = true
@@ -53,9 +54,9 @@ namespace GameStore.Services
             return createdOrder;
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByEmailAsync(string email)
+        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(int userId)
         {
-            return await _orderRepository.GetByEmailAsync(email);
+            return await _orderRepository.GetByUserIdAsync(userId);
         }
 
         public async Task<string> GenerateGameKeyAsync()

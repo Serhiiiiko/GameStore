@@ -19,13 +19,14 @@ namespace GameStore.Services
             _telegramService = telegramService;
         }
 
-        public async Task<SteamTopUp> CreateTopUpAsync(string steamId, string email, decimal amount)
+        public async Task<SteamTopUp> CreateTopUpAsync(string steamId, string email, decimal amount, int? userId = null)
         {
             var topUp = new SteamTopUp
             {
                 SteamId = steamId,
                 Email = email,
                 Amount = amount,
+                UserId = userId,
                 Date = DateTime.UtcNow,
                 IsCompleted = true
             };

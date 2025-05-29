@@ -1,11 +1,12 @@
-using AspNetCoreRateLimit;
 using GameStore.Data;
 using GameStore.Interfaces;
 using GameStore.Repositories;
 using GameStore.Services;
+using Microsoft.EntityFrameworkCore;
+using AspNetCoreRateLimit;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore;
+using HealthChecks.NpgSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,27 +22,37 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Configure PostgreSQL
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register repositories
+// Repositories
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ISteamTopUpRepository, SteamTopUpRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Register services
+// Services
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISteamTopUpService, SteamTopUpService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-// Добавить вместе с другими сервисами
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Configure rate limiting
+// Add Memory Cache
 builder.Services.AddMemoryCache();
 
-builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
+// Rate limiting configuration
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 var app = builder.Build();
 
@@ -49,57 +60,52 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios
     app.UseHsts();
+}
+
+// Create uploads directory if it doesn't exist
+var uploadsPath = Path.Combine(app.Environment.WebRootPath, "images", "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-
 app.UseRouting();
+
+// Add session middleware before authorization
 app.UseSession();
 
 app.UseAuthorization();
+
+// Add rate limiting middleware
+app.UseIpRateLimiting();
+
+// Health check endpoint
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
-// Применение миграций при запуске
+// Apply migrations on startup
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
+        dbContext.Database.Migrate();
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Произошла ошибка при миграции базы данных.");
-    }
-}
-
-// После создания app
-if (args.Contains("--apply-migrations"))
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var services = scope.ServiceProvider;
-        try
-        {
-            var context = services.GetRequiredService<ApplicationDbContext>();
-            context.Database.Migrate();
-            // Можно также добавить заполнение базы тестовыми данными
-        }
-        catch (Exception ex)
-        {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "Произошла ошибка при миграции базы данных.");
-        }
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
     }
 }
 

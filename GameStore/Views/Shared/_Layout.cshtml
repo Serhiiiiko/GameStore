@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="~/css/owl.css">
     <link rel="stylesheet" href="~/css/animate.css">
     <link rel="stylesheet" href="~/css/steam-topup.css" />
+    <link rel="stylesheet" href="~/css/auth.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css">
 
@@ -184,7 +185,22 @@
                             <li><a asp-controller="Games" asp-action="Index" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Games" ? "active" : "")">Каталог</a></li>
                             <li><a asp-controller="Home" asp-action="SteamTopUp" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" && ViewContext.RouteData.Values["Action"].ToString() == "SteamTopUp" ? "active" : "")">Пополнить Steam</a></li>
                             <li><a asp-controller="Admin" asp-action="Login" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active" : "")"></a></li>
-                            <li><a asp-controller="Home" asp-action="PurchaseHistory" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" && (ViewContext.RouteData.Values["Action"].ToString() == "PurchaseHistory" || ViewContext.RouteData.Values["Action"].ToString() == "PurchaseHistoryResult") ? "active" : "")">История покупок <img src="~/images/profile-header.jpg" alt=""></a></li>
+                            @if (Context.Session.GetInt32("UserId") != null)
+                            {
+                                <li>
+                                    <a asp-controller="Account" asp-action="Dashboard" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Account" ? "active" : "")">
+                                        @Context.Session.GetString("UserName") <img src="~/images/profile-header.jpg" alt="">
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a asp-controller="Account" asp-action="Login" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Account" && ViewContext.RouteData.Values["Action"].ToString() == "Login" ? "active" : "")">
+                                        Войти <img src="~/images/profile-header.jpg" alt="">
+                                    </a>
+                                </li>
+                            }
                         </ul>
                         <a class="menu-trigger">
                             <span>Меню</span>

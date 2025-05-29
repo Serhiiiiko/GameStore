@@ -131,15 +131,23 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <form asp-controller="Games" asp-action="Purchase" method="post">
-                            <input type="hidden" id="gameId" name="gameId" value="">
+                        <form id="purchaseForm" asp-controller="Games" asp-action="Purchase" method="post">
+                            <input type="hidden" id="modalGameId" name="gameId" value="">
+                            <input type="hidden" id="modalPlatform" name="platform" value="">
 
-                            <div class="mb-4">
-                                <label for="email" class="form-label">Ваш E-mail:</label>
-                                <input type="email" class="form-control" id="email" name="email" required
-                                       style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
-                                <small class="text-muted">На этот адрес будет отправлен ключ активации игры</small>
-                            </div>
+                            @if (ViewBag.IsAuthenticated == true)
+                            {
+                                <div class="mb-4">
+                                    <p style="color: #ccc;">Игра будет отправлена на email вашего аккаунта</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Для покупки игры необходимо войти в аккаунт
+                                </div>
+                            }
 
                             <div class="mb-4">
                                 <label class="form-label">Способ оплаты:</label>
@@ -242,6 +250,17 @@
               document.getElementById('gamePlatform').style.backgroundColor = platformColor;
               document.getElementById('gameRating').innerText = gameRating;
               document.getElementById('gamePrice').innerText = gamePrice;
+
+              // Check if user is authenticated
+              const isAuthenticated = @(ViewBag.IsAuthenticated ? "true" : "false");
+              const purchaseForm = document.querySelector('#purchaseModal form');
+
+              if (!isAuthenticated) {
+                purchaseForm.addEventListener('submit', function(e) {
+                  e.preventDefault();
+                  window.location.href = '@Url.Action("Login", "Account", new { returnUrl = Url.Action("Index", "Home") })';
+                });
+              }
 
               // Show modal
               const purchaseModal = new bootstrap.Modal(document.getElementById('purchaseModal'));

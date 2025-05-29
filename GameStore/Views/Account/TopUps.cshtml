@@ -1,0 +1,102 @@
+﻿@model IEnumerable<SteamTopUp>
+@{
+    ViewData["Title"] = "История пополнений Steam";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>История</em> пополнений Steam</h4>
+        </div>
+
+        <!-- Back to Dashboard -->
+        <div class="mb-4">
+            <a asp-controller="Account" asp-action="Dashboard" style="color: #ec6090;">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться в личный кабинет
+            </a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">
+                <p>У вас пока нет пополнений Steam. <a asp-controller="Home" asp-action="SteamTopUp">Пополнить Steam</a></p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Steam ID</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var topUp in Model)
+                        {
+                            <tr>
+                                <td>@topUp.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    <span style="font-family: monospace;">@topUp.SteamId</span>
+                                </td>
+                                <td>
+                                    <span style="color: #1b9bff; font-weight: bold;">@topUp.Amount.ToString("C0")</span>
+                                </td>
+                                <td>
+                                    <span class="badge @(topUp.IsCompleted ? "bg-success" : "bg-warning")">
+                                        @(topUp.IsCompleted ? "Завершено" : "В обработке")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr style="border-top: 2px solid #444;">
+                            <td colspan="2"><strong>Всего пополнений: @Model.Count()</strong></td>
+                            <td colspan="2" class="text-end">
+                                <strong>Общая сумма: 
+                                    <span style="color: #1b9bff; font-size: 20px;">
+                                        @Model.Sum(t => t.Amount).ToString("C0")
+                                    </span>
+                                </strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Steam Balance Card -->
+            <div class="row mt-4">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="steam-balance-card" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border-radius: 23px; padding: 30px; text-align: center;">
+                        <i class="fab fa-steam" style="font-size: 48px; color: #fff; margin-bottom: 15px;"></i>
+                        <h5 style="color: #fff;">Всего пополнено в Steam</h5>
+                        <h2 style="color: #1b9bff; font-weight: bold; margin-top: 20px;">
+                            @Model.Sum(t => t.Amount).ToString("C0")
+                        </h2>
+                        <div class="mt-4">
+                            <a asp-controller="Home" asp-action="SteamTopUp" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i>Пополнить еще
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .steam-balance-card {
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .steam-balance-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+</style>

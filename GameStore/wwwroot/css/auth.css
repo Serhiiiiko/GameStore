@@ -1,0 +1,73 @@
+﻿/* Auth Pages Styles */
+.login-form input[type="email"],
+.login-form input[type="password"],
+.register-form input[type="text"],
+.register-form input[type="email"],
+.register-form input[type="password"] {
+    background-color: #1f2122;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.login-form input:focus,
+.register-form input:focus {
+    border-color: #ec6090;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(236, 96, 144, 0.2);
+}
+
+.form-check-input:checked {
+    background-color: #ec6090;
+    border-color: #ec6090;
+}
+
+.validation-summary-errors {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+    .validation-summary-errors ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+.field-validation-error {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+/* Auth buttons */
+.btn-primary {
+    background-color: #ec6090;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #d63384;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(236, 96, 144, 0.4);
+    }
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    }

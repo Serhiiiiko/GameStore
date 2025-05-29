@@ -1,127 +1,63 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using GameStore.Models;
 using GameStore.Interfaces;
-using GameStore.Repositories;
+using GameStore.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GameStore.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly IGameService _gameService;
         private readonly IOrderRepository _orderRepository;
+        private readonly IAuthService _authService;
 
-        public HomeController(ILogger<HomeController> logger, IGameService gameService, IOrderRepository orderRepository)
+        public HomeController(
+            IGameService gameService,
+            IOrderRepository orderRepository,
+            IAuthService authService)
         {
-            _logger = logger;
             _gameService = gameService;
             _orderRepository = orderRepository;
+            _authService = authService;
         }
 
-        // Update the Index action in HomeController.cs
         public async Task<IActionResult> Index()
         {
             var games = await _gameService.GetAllGamesAsync();
 
-            // Get user orders from cookies if they exist
-            var orderIds = Request.Cookies["UserOrders"]?.Split(',').Where(id => !string.IsNullOrEmpty(id)).ToList();
-            var userOrders = new List<Order>();
-
-            if (orderIds != null && orderIds.Any())
+            // Check if user is authenticated
+            if (_authService.IsAuthenticated(HttpContext))
             {
-                foreach (var orderId in orderIds)
+                var user = await _authService.GetCurrentUserAsync(HttpContext);
+                if (user != null)
                 {
-                    if (int.TryParse(orderId, out var id))
-                    {
-                        var order = await _orderRepository.GetByIdAsync(id);
-                        if (order != null)
-                        {
-                            userOrders.Add(order);
-                        }
-                    }
+                    ViewBag.UserOrders = user.Orders.OrderByDescending(o => o.OrderDate).ToList();
                 }
             }
+            else
+            {
+                ViewBag.UserOrders = new List<Order>();
+            }
 
-            ViewBag.UserOrders = userOrders;
+            ViewBag.IsAuthenticated = _authService.IsAuthenticated(HttpContext);
+
             return View(games);
         }
 
-        public async Task<IActionResult> Browse()
+        public IActionResult SteamTopUp()
         {
-            var games = await _gameService.GetAllGamesAsync();
-            return View(games);
-        }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var game = await _gameService.GetGameByIdAsync(id.Value);
-            if (game == null)
-            {
-                return NotFound();
-            }
-
-            return View(game);
-        }
-
-        public IActionResult Streams()
-        {
+            ViewBag.IsAuthenticated = _authService.IsAuthenticated(HttpContext);
             return View();
         }
 
-        public IActionResult Profile(string email)
+        public IActionResult PurchaseHistory()
         {
-            ViewBag.Email = email;
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> PurchaseHistory()
-        {
-            // Get order IDs from cookie
-            string orderIdsCookie = Request.Cookies["UserOrders"] ?? "";
-            List<int> orderIds = new List<int>();
-
-            if (!string.IsNullOrEmpty(orderIdsCookie))
+            // Redirect to Account Dashboard if authenticated
+            if (_authService.IsAuthenticated(HttpContext))
             {
-                // Parse order IDs from cookie
-                foreach (var idStr in orderIdsCookie.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (int.TryParse(idStr, out int id))
-                    {
-                        orderIds.Add(id);
-                    }
-                }
+                return RedirectToAction("Orders", "Account");
             }
 
-            // If we have orders in cookies, fetch them
-            if (orderIds.Any())
-            {
-                var orderRepository = HttpContext.RequestServices.GetService<IOrderRepository>();
-                var orders = new List<Order>();
-
-                foreach (var id in orderIds)
-                {
-                    var order = await orderRepository.GetByIdAsync(id);
-                    if (order != null)
-                    {
-                        orders.Add(order);
-                    }
-                }
-
-                return View("PurchaseHistoryResult", orders);
-            }
-
-            // If no orders in cookies, show form to enter email as fallback
             return View();
         }
 
@@ -130,28 +66,29 @@ namespace GameStore.Controllers
         {
             if (string.IsNullOrEmpty(email))
             {
-                ViewBag.Error = "Пожалуйста, укажите email";
+                ViewBag.Error = "Пожалуйста, введите email";
                 return View("PurchaseHistory");
             }
 
-            var orderService = HttpContext.RequestServices.GetService<IOrderService>();
-            var orders = await orderService.GetOrdersByEmailAsync(email);
-
+            var orders = await _orderRepository.GetByEmailAsync(email);
             return View("PurchaseHistoryResult", orders);
         }
-        public IActionResult SteamTopUp()
+
+        public IActionResult Privacy()
         {
             return View();
         }
-        // Add this method to your HomeController.cs file
-        public IActionResult PaymentAndDelivery()
-        {
-            return View();
-        }
+
         public IActionResult UserAgreement()
         {
             return View();
         }
+
+        public IActionResult PaymentAndDelivery()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

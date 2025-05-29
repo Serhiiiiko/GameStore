@@ -6,15 +6,18 @@ namespace GameStore.Controllers
     public class GamesController : Controller
     {
         private readonly IGameService _gameService;
+        private readonly IAuthService _authService;
 
-        public GamesController(IGameService gameService)
+        public GamesController(IGameService gameService, IAuthService authService)
         {
             _gameService = gameService;
+            _authService = authService;
         }
 
         public async Task<IActionResult> Index()
         {
             var games = await _gameService.GetAllGamesAsync();
+            ViewBag.IsAuthenticated = _authService.IsAuthenticated(HttpContext);
             return View(games);
         }
 
@@ -25,16 +28,24 @@ namespace GameStore.Controllers
             {
                 return NotFound();
             }
+            ViewBag.IsAuthenticated = _authService.IsAuthenticated(HttpContext);
             return View(game);
         }
-        // In GameStore/Controllers/GamesController.cs
+
         [HttpPost]
         public async Task<IActionResult> Purchase(int gameId, string email)
         {
-            if (string.IsNullOrEmpty(email))
+            // Check if user is authenticated
+            if (!_authService.IsAuthenticated(HttpContext))
             {
-                TempData["Error"] = "Пожалуйста, укажите email";
-                return RedirectToAction("Details", new { id = gameId });
+                TempData["Error"] = "Пожалуйста, войдите в свой аккаунт для совершения покупки";
+                return Json(new { requireLogin = true, returnUrl = Url.Action("Login", "Account", new { returnUrl = Url.Action("Index", "Games") }) });
+            }
+
+            var userId = _authService.GetCurrentUserId(HttpContext);
+            if (userId == null)
+            {
+                return Json(new { success = false, message = "Ошибка аутентификации" });
             }
 
             try
@@ -42,33 +53,25 @@ namespace GameStore.Controllers
                 var orderService = HttpContext.RequestServices.GetService<IOrderService>();
                 if (orderService == null)
                 {
-                    TempData["Error"] = "Сервис заказа недоступен.";
-                    return RedirectToAction("Details", new { id = gameId });
+                    return Json(new { success = false, message = "Сервис заказа недоступен." });
                 }
 
-                var order = await orderService.CreateOrderAsync(email, gameId);
-
-                // Store order ID in cookie
-                var orderIds = Request.Cookies["UserOrders"]?.Split(',').ToList() ?? new List<string>();
-                orderIds.Add(order.Id.ToString());
-
-                // Save updated order IDs back to cookie (expires in 30 days)
-                Response.Cookies.Append("UserOrders", string.Join(",", orderIds), new CookieOptions
+                // Get current user's email
+                var user = await _authService.GetCurrentUserAsync(HttpContext);
+                if (user == null)
                 {
-                    Expires = DateTime.Now.AddDays(30),
-                    IsEssential = true,
-                    SameSite = SameSiteMode.Lax
-                });
+                    return Json(new { success = false, message = "Пользователь не найден" });
+                }
+
+                var order = await orderService.CreateOrderAsync(user.Email, gameId, userId.Value);
 
                 TempData["Success"] = "Покупка успешно завершена. Проверьте вашу почту для получения ключа.";
+                return Json(new { success = true, redirectUrl = Url.Action("Orders", "Account") });
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Ошибка при покупке: {ex.Message}";
+                return Json(new { success = false, message = $"Ошибка при покупке: {ex.Message}" });
             }
-
-            // Changed from redirecting to Details to redirecting to Home page
-            return RedirectToAction("Index", "Home");
         }
     }
 }

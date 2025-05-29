@@ -1,0 +1,175 @@
+﻿@model User
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Личный</em> кабинет</h4>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<!-- User Info Section -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="user-info" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <div class="user-avatar" style="width: 100px; height: 100px; background: linear-gradient(45deg, #ec6090, #d63384); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <span style="color: white; font-size: 36px; font-weight: bold;">
+                            @(Model.Name.Substring(0, 1).ToUpper())
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3 style="color: #fff; margin-bottom: 10px;">@Model.Name</h3>
+                    <p style="color: #ccc; margin-bottom: 5px;"><i class="fas fa-envelope me-2"></i> @Model.Email</p>
+                    <p style="color: #ccc;"><i class="fas fa-calendar me-2"></i> Зарегистрирован: @Model.RegisteredAt.ToString("dd.MM.yyyy")</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i> Выйти
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-lg-4">
+        <div class="stat-card" style="background-color: #1f2122; border-radius: 23px; padding: 30px; text-align: center;">
+            <i class="fas fa-gamepad" style="font-size: 48px; color: #ec6090; margin-bottom: 15px;"></i>
+            <h4 style="color: #fff;">@ViewBag.TotalOrders</h4>
+            <p style="color: #ccc;">Куплено игр</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="stat-card" style="background-color: #1f2122; border-radius: 23px; padding: 30px; text-align: center;">
+            <i class="fab fa-steam" style="font-size: 48px; color: #1b9bff; margin-bottom: 15px;"></i>
+            <h4 style="color: #fff;">@ViewBag.TotalTopUps</h4>
+            <p style="color: #ccc;">Пополнений Steam</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="stat-card" style="background-color: #1f2122; border-radius: 23px; padding: 30px; text-align: center;">
+            <i class="fas fa-ruble-sign" style="font-size: 48px; color: #4caf50; margin-bottom: 15px;"></i>
+            <h4 style="color: #fff;">@ViewBag.TotalSpent.ToString("N0")</h4>
+            <p style="color: #ccc;">Всего потрачено</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="quick-actions" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <h5 style="color: #ec6090; margin-bottom: 20px;">Быстрые действия</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <a asp-controller="Account" asp-action="Orders" class="action-item" style="display: block; background-color: #1f2122; border-radius: 15px; padding: 20px; text-decoration: none; transition: all 0.3s;">
+                        <i class="fas fa-shopping-bag me-2" style="color: #ec6090;"></i>
+                        <span style="color: #fff;">Мои покупки</span>
+                        <i class="fas fa-chevron-right float-end" style="color: #666;"></i>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a asp-controller="Account" asp-action="TopUps" class="action-item" style="display: block; background-color: #1f2122; border-radius: 15px; padding: 20px; text-decoration: none; transition: all 0.3s;">
+                        <i class="fab fa-steam me-2" style="color: #1b9bff;"></i>
+                        <span style="color: #fff;">История пополнений</span>
+                        <i class="fas fa-chevron-right float-end" style="color: #666;"></i>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a asp-controller="Games" asp-action="Index" class="action-item" style="display: block; background-color: #1f2122; border-radius: 15px; padding: 20px; text-decoration: none; transition: all 0.3s;">
+                        <i class="fas fa-store me-2" style="color: #4caf50;"></i>
+                        <span style="color: #fff;">Каталог игр</span>
+                        <i class="fas fa-chevron-right float-end" style="color: #666;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="recent-activity" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <h5 style="color: #ec6090; margin-bottom: 20px;">Последние покупки</h5>
+
+            @if (Model.Orders.Any())
+            {
+                <div class="activity-list">
+                    @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate).Take(5))
+                    {
+                        <div class="activity-item" style="background-color: #1f2122; border-radius: 15px; padding: 15px; margin-bottom: 10px;">
+                            <div class="row align-items-center">
+                                <div class="col-md-1">
+                                    <i class="fas fa-gamepad" style="font-size: 24px; color: #ec6090;"></i>
+                                </div>
+                                <div class="col-md-7">
+                                    <h6 style="color: #fff; margin-bottom: 5px;">@order.Game?.Title</h6>
+                                    <p style="color: #999; margin: 0; font-size: 14px;">@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <span style="color: #ec6090; font-weight: bold;">@order.Game?.Price.ToString("C0")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.Orders.Count() > 5)
+                {
+                    <div class="text-center mt-3">
+                        <a asp-controller="Account" asp-action="Orders" style="color: #ec6090;">
+                            Показать все покупки <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="color: #999;">У вас пока нет покупок.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .action-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        background-color: #2a2d2e !important;
+    }
+
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+    .activity-item {
+        transition: all 0.3s ease;
+    }
+
+        .activity-item:hover {
+            background-color: #2a2d2e !important;
+        }
+</style>

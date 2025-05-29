@@ -13,6 +13,10 @@ namespace GameStore.Models
         public int GameId { get; set; }
         public Game? Game { get; set; }
 
+        // Add User relationship
+        public int? UserId { get; set; }
+        public User? User { get; set; }
+
         public string Key { get; set; } = string.Empty;
 
         public DateTime OrderDate { get; set; } = DateTime.Now;

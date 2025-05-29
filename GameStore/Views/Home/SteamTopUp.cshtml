@@ -124,7 +124,15 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary w-100 py-3">ПОПОЛНИТЬ</button>
+                    @if (ViewBag.IsAuthenticated == true)
+                    {
+                        <button type="submit" class="btn btn-primary w-100 py-3">ПОПОЛНИТЬ</button>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("SteamTopUp", "Home")"
+                           class="btn btn-primary w-100 py-3">ВОЙТИ И ПОПОЛНИТЬ</a>
+                    }
                 </div>
 
                 <div class="small mt-3 text-muted">

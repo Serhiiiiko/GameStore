@@ -32,6 +32,14 @@ namespace GameStore.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Order>> GetByUserIdAsync(int userId)
+        {
+            return await _context.Orders
+                .Include(o => o.Game)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
         public async Task<Order> CreateAsync(Order order)
         {
             _context.Orders.Add(order);

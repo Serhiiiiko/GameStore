@@ -1,0 +1,57 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+    var returnUrl = ViewData["ReturnUrl"]?.ToString();
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="heading-section">
+            <h4><em>Вход</em> в аккаунт</h4>
+        </div>
+
+        <div class="login-form" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Email" class="mb-2">E-mail</label>
+                    <input asp-for="Email" class="form-control" placeholder="Введите ваш email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Password" class="mb-2">Пароль</label>
+                    <input asp-for="Password" class="form-control" placeholder="Введите пароль">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMe" class="form-check-input" style="background-color: #1f2122; border: 1px solid #444;">
+                    <label asp-for="RememberMe" class="form-check-label">
+                        Запомнить меня
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-100 py-3">
+                        <i class="fas fa-sign-in-alt me-2"></i> ВОЙТИ
+                    </button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p>
+                        Еще нет аккаунта?
+                        <a asp-controller="Account" asp-action="Register" style="color: #ec6090;">
+                            Зарегистрироваться
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

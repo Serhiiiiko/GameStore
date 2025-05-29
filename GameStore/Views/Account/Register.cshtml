@@ -1,0 +1,71 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="heading-section">
+            <h4><em>Регистрация</em> нового аккаунта</h4>
+        </div>
+
+        <div class="register-form" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <form asp-controller="Account" asp-action="Register" method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Name" class="mb-2">Ваше имя</label>
+                    <input asp-for="Name" class="form-control" placeholder="Введите ваше имя">
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Email" class="mb-2">E-mail</label>
+                    <input asp-for="Email" class="form-control" placeholder="Введите ваш email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Password" class="mb-2">Пароль</label>
+                    <input asp-for="Password" class="form-control" placeholder="Придумайте пароль">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <small class="text-muted">Минимум 6 символов</small>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="ConfirmPassword" class="mb-2">Подтвердите пароль</label>
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Повторите пароль">
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input type="checkbox" class="form-check-input" id="agreeTerms" required
+                           style="background-color: #1f2122; border: 1px solid #444;">
+                    <label class="form-check-label" for="agreeTerms">
+                        Я согласен с <a asp-controller="Home" asp-action="UserAgreement" style="color: #ec6090;">условиями использования</a>
+                        и <a asp-controller="Home" asp-action="Privacy" style="color: #ec6090;">политикой конфиденциальности</a>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary w-100 py-3">
+                        <i class="fas fa-user-plus me-2"></i> ЗАРЕГИСТРИРОВАТЬСЯ
+                    </button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p>
+                        Уже есть аккаунт?
+                        <a asp-controller="Account" asp-action="Login" style="color: #ec6090;">
+                            Войти
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

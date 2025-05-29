@@ -16,6 +16,10 @@ namespace GameStore.Models
         [Required]
         public decimal Amount { get; set; }
 
+        // Add User relationship
+        public int? UserId { get; set; }
+        public User? User { get; set; }
+
         public DateTime Date { get; set; } = DateTime.Now;
 
         public bool IsCompleted { get; set; } = false;
