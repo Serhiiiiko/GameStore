@@ -196,7 +196,12 @@
                             <div class="mb-4">
                                 <label for="email" class="form-label">Ваш Email:</label>
                                 <input type="email" class="form-control" id="email" name="email" required
-                                       style="background-color: #1f2122; border: 1px solid #444; color: #fff;">
+                                       style="background-color: #1f2122; border: 1px solid #444; color: #fff;"
+                                       @if (Context.Session.GetInt32("UserId") != null)
+                                       {
+                                           @:value="@Context.Session.GetString("UserEmail")" readonly
+                                       }
+>
                                 <small class="text-muted">На этот адрес будет отправлен ключ активации игры</small>
                             </div>
 
@@ -245,7 +250,7 @@
                             </div>
 
                             <div class="mt-4">
-                                @if (ViewBag.IsAuthenticated == true)
+                                @if (Context.Session.GetInt32("UserId") != null)
                                 {
                                     <button type="submit" class="btn w-100 py-3" id="paymentButton"
                                             style="background-color: #ec6090; color: #fff; border-radius: 25px; font-size: 18px;">
@@ -358,19 +363,12 @@
                 // Update payment button color
                 $('#paymentButton').css('background-color', platformColor);
 
-                // Check if user is authenticated
-                var isAuthenticated = @(ViewBag.IsAuthenticated ? "true" : "false");
-                if (!isAuthenticated) {
-                    // Override form submit for non-authenticated users
-                    $('#purchaseModal form').off('submit').on('submit', function(e) {
-                        e.preventDefault();
-                        $('#purchaseModal').modal('hide');
-                        window.location.href = '@Url.Action("Login", "Account", new { returnUrl = Url.Action("Index", "Games") })';
-                    });
-                }
+                // Убираем обработчики, которые могут мешать нормальной отправке формы
+                $('#purchaseModal form').off('submit');
 
                 // Show modal
                 $('#purchaseModal').modal('show');
+            });
 
             // Platform tab filtering
             $('.platform-tab').click(function(e) {

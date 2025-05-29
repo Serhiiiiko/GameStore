@@ -1,22 +1,67 @@
-﻿/* Auth Pages Styles */
-.login-form input[type="email"],
-.login-form input[type="password"],
-.register-form input[type="text"],
-.register-form input[type="email"],
-.register-form input[type="password"] {
-    background-color: #1f2122;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 12px 20px;
+﻿/* Стили для страниц аутентификации с исправленной контрастностью */
+
+/* Исправление для сообщений об ошибках */
+.text-danger {
+    color: #ff6b6b !important;
+    background-color: transparent !important;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid #dc3545;
+    color: #ff6b6b;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    border: 1px solid #28a745;
+    color: #5eff7f;
+}
+
+/* Стили для validation summary */
+.validation-summary-errors {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid #dc3545;
     border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+/* Скрываем пустой validation summary */
+.text-danger:empty {
+    display: none !important;
+}
+
+/* Стили для validation summary когда есть ошибки */
+.text-danger.validation-summary-errors {
+    display: block !important;
+}
+
+.validation-summary-errors ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.validation-summary-errors li {
+    color: #ff6b6b;
+}
+
+/* Стили для ссылок в темной теме */
+.login-form a, .register-form a {
+    color: #ec6090 !important;
+    text-decoration: none;
     transition: all 0.3s ease;
 }
 
-.login-form input:focus,
-.register-form input:focus {
-    border-color: #ec6090;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(236, 96, 144, 0.2);
+    .login-form a:hover, .register-form a:hover {
+        color: #ff7fa8 !important;
+        text-decoration: underline;
+    }
+
+/* Стили для checkbox и label */
+.form-check-label {
+    color: #ccc !important;
+    cursor: pointer;
 }
 
 .form-check-input:checked {
@@ -24,50 +69,83 @@
     border-color: #ec6090;
 }
 
-.validation-summary-errors {
-    background-color: #dc3545;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+/* Стили для labels */
+.form-group label {
+    color: #ccc !important;
+    font-weight: 500;
 }
 
-    .validation-summary-errors ul {
-        margin: 0;
-        padding-left: 20px;
+/* Стили для input полей */
+.form-control {
+    background-color: #1f2122 !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+}
+
+    .form-control:focus {
+        background-color: #27292a !important;
+        border-color: #ec6090 !important;
+        color: #fff !important;
+        box-shadow: 0 0 0 0.2rem rgba(236, 96, 144, 0.25);
     }
 
-.field-validation-error {
-    display: block;
-    margin-top: 5px;
-    font-size: 14px;
+    .form-control::placeholder {
+        color: #666 !important;
+    }
+
+/* Исправление для мелкого текста */
+.text-muted {
+    color: #999 !important;
 }
 
-/* Auth buttons */
+small.text-muted {
+    color: #888 !important;
+}
+
+/* Стили для кнопок */
 .btn-primary {
     background-color: #ec6090;
-    border: none;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    border-color: #ec6090;
+    color: #fff;
 }
 
     .btn-primary:hover {
         background-color: #d63384;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(236, 96, 144, 0.4);
+        border-color: #d63384;
+        color: #fff;
     }
 
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+/* Дополнительные стили для читаемости */
+p {
+    color: #ccc;
 }
 
-    .btn-danger:hover {
-        background-color: #c82333;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+h4, h5 {
+    color: #fff;
+}
+
+/* Исправление видимости текста в модальных окнах */
+.modal-body p, .modal-body label {
+    color: #ccc !important;
+}
+
+/* Стили для ошибок валидации полей */
+.field-validation-error {
+    color: #ff6b6b !important;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.input-validation-error {
+    border-color: #dc3545 !important;
+}
+
+/* Улучшение контрастности для ссылок в тексте условий */
+.form-check-label a {
+    color: #ff7fa8 !important;
+    font-weight: 500;
+}
+
+    .form-check-label a:hover {
+        color: #ffa0c4 !important;
     }
