@@ -33,16 +33,24 @@
                         <div class="item" data-id="@game.Id" data-price="@game.Price" data-platform="@game.Platform">
                             <img src="@(string.IsNullOrEmpty(game.ImageUrl) ? "/images/popular-01.jpg" : game.ImageUrl)"
                                  alt="@game.Title"
-                                 style="width: 225px; height: 190px; object-fit: cover; border-radius: 23px; display: block; margin: 0 auto;">
-                            <h4>
+                                 style="width: 100%; height: 190px; object-fit: cover; border-radius: 23px; display: block; margin: 0 auto;">
+                            <h4 style="margin-top: 15px;">
                                 @game.Title<br>
                                 <span>@game.Genre</span>
                             </h4>
-                            <!-- Removed platform badge from here -->
-                            <ul>
-                                <li><i class="fa fa-star"></i> @game.Rating</li>
-                                <li style="color: #ec6090; font-weight: bold;">@game.Price.ToString("₽0")</li>
-                            </ul>
+                            <div class="platform-badge mt-2" style="text-align: center;">
+                                <span class="badge" style="background-color: @GetPlatformColor(game.Platform); color: #fff; padding: 5px 15px; border-radius: 5px; font-size: 12px;">
+                                    <i class="@GetPlatformIcon(game.Platform) me-1"></i>@game.Platform
+                                </span>
+                            </div>
+                            <div class="game-stats" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                                <div class="rating" style="color: #fff; font-size: 14px;">
+                                    <i class="fa fa-star" style="color: yellow;"></i> @game.Rating
+                                </div>
+                                <div class="price" style="color: #ec6090; font-weight: bold; font-size: 18px;">
+                                    @game.Price.ToString("₽0")
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -122,7 +130,9 @@
                             <h5 id="gameTitle" class="mb-2"></h5>
                             <p id="gameGenre" style="color: #ec6090;"></p>
                             <div class="platform-badge mb-2">
-                                <span id="gamePlatform" class="badge" style="background-color: #ec6090; color: #fff;"></span>
+                                <span id="gamePlatform" class="badge" style="background-color: #ec6090; color: #fff; padding: 5px 15px; border-radius: 5px;">
+                                    <i class="fas fa-gamepad me-1"></i><span id="gamePlatformText"></span>
+                                </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div><i class="fa fa-star" style="color: yellow;"></i> <span id="gameRating"></span></div>
@@ -228,6 +238,17 @@
             _ => "#666666"
         };
     }
+
+    public string GetPlatformIcon(PlatformType platform)
+    {
+        return platform switch
+        {
+            PlatformType.Steam => "fab fa-steam-symbol",
+            PlatformType.Origin => "fas fa-dice-d6",
+            PlatformType.Xbox => "fab fa-xbox",
+            _ => "fas fa-gamepad"
+        };
+    }
 }
 
 @section Scripts {
@@ -246,16 +267,23 @@
                     const gameTitle = item.querySelector('h4').innerText.split('\n')[0];
                     const gameGenre = item.querySelector('h4 span').innerText;
                     const gamePlatform = item.getAttribute('data-platform');
-                    const gameRating = item.querySelector('ul li:first-child').innerText.replace(/[^\d.]/g, '');
-                    const gamePrice = item.getAttribute('data-price') + ' ₽';
+                    const gameRating = item.querySelector('.rating').innerText.replace(/[^\d.]/g, '');
+                    const gamePrice = item.querySelector('.price').innerText;
 
                     // Populate modal
                     document.getElementById('modalGameId').value = gameId;
                     document.getElementById('gameImage').src = gameImage;
                     document.getElementById('gameTitle').innerText = gameTitle;
                     document.getElementById('gameGenre').innerText = gameGenre;
-                    document.getElementById('gamePlatform').innerText = gamePlatform;
-                    document.getElementById('gamePlatform').style.backgroundColor = getColorForPlatform(gamePlatform);
+
+                    // Update platform badge
+                    const platformBadge = document.getElementById('gamePlatform');
+                    const platformText = document.getElementById('gamePlatformText');
+                    const platformIcon = getIconForPlatform(gamePlatform);
+
+                    platformBadge.style.backgroundColor = getColorForPlatform(gamePlatform);
+                    platformBadge.innerHTML = `<i class="${platformIcon} me-1"></i>${gamePlatform}`;
+
                     document.getElementById('gameRating').innerText = gameRating;
                     document.getElementById('gamePrice').innerText = gamePrice;
                     document.getElementById('modalPlatform').value = gamePlatform;
@@ -278,6 +306,16 @@
                     case 'Origin': return '#f56c2d';
                     case 'Xbox': return '#107c10';
                     default: return '#666666';
+                }
+            }
+
+            // Helper function to get platform icon
+            function getIconForPlatform(platform) {
+                switch(platform) {
+                    case 'Steam': return 'fab fa-steam-symbol';
+                    case 'Origin': return 'fas fa-dice-d6';
+                    case 'Xbox': return 'fab fa-xbox';
+                    default: return 'fas fa-gamepad';
                 }
             }
         });
@@ -312,4 +350,41 @@
             );
         });
     </script>
+
+    <style>
+        .most-popular .item {
+            background-color: #27292a;
+            padding: 15px;
+            border-radius: 23px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .most-popular .item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            }
+
+            .most-popular .item .platform-badge {
+                margin: 10px 0;
+            }
+
+                .most-popular .item .platform-badge .badge {
+                    font-size: 11px;
+                    padding: 4px 12px;
+                    font-weight: 500;
+                }
+
+            .most-popular .item .game-stats {
+                margin-top: auto;
+                padding-top: 10px;
+            }
+
+            .most-popular .item img {
+                margin-bottom: 0;
+            }
+    </style>
 }
