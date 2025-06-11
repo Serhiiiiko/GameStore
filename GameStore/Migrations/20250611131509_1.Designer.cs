@@ -3,6 +3,7 @@ using System;
 using GameStore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GameStore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611131509_1")]
+    partial class _1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +53,7 @@ namespace GameStore.Migrations
                         new
                         {
                             Id = 1,
-                            PasswordHash = "$2b$10$v/3riKk1nSM09cqY3WDkEeiGwZh1PEroh4m2ef8fKQNSS/YrtaSBy",
+                            PasswordHash = "$2b$10$GLyTfCwoOOHlVxiogXoIf.69GrsGF5HVWr/GvVCnRZSL9.im3zvZq",
                             Role = "Admin",
                             Username = "admin"
                         });
