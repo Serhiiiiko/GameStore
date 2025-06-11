@@ -50,6 +50,10 @@ namespace GameStore.Controllers
             return View();
         }
 
+        public IActionResult RefundPolicy()
+        {
+            return View();
+        }
         public IActionResult PurchaseHistory()
         {
             // Redirect to Account Dashboard if authenticated
