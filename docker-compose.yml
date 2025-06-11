@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:14
@@ -8,18 +10,30 @@ services:
       POSTGRES_DB: gamestore
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     restart: always
     networks:
       - gamestore-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
  
   gamestore:
-    image: ${DOCKER_REGISTRY-}gamestore
+    image: gamestore:latest
     build:
       context: .
       dockerfile: GameStore/Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
     container_name: gamestore-webapp
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=gamestore;Username=postgres;Password=postgres
