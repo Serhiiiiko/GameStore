@@ -1,12 +1,13 @@
+using AspNetCoreRateLimit;
 using GameStore.Data;
 using GameStore.Interfaces;
 using GameStore.Repositories;
 using GameStore.Services;
-using Microsoft.EntityFrameworkCore;
-using AspNetCoreRateLimit;
+using GameStore.Services.PaymentProviders;
+using HealthChecks.NpgSql;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using HealthChecks.NpgSql;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,9 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ITelegramNotificationService, TelegramNotificationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentProviderFactory, PaymentProviderFactory>();
+builder.Services.AddScoped<TestPaymentProvider>();
 // Add Memory Cache
 builder.Services.AddMemoryCache();
 

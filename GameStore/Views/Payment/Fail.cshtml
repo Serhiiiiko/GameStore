@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Ошибка платежа";
+    var transaction = ViewBag.Transaction as PaymentTransaction;
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="error-container text-center" style="background-color: #27292a; border-radius: 23px; padding: 40px;">
+            <div class="error-icon mb-4">
+                <i class="fas fa-times-circle" style="font-size: 80px; color: #dc3545;"></i>
+            </div>
+
+            <h2 style="color: #dc3545; margin-bottom: 20px;">Платеж не выполнен</h2>
+
+            @if (transaction != null && !string.IsNullOrEmpty(transaction.ErrorMessage))
+            {
+                <div class="error-details" style="background-color: #1f2122; border-radius: 15px; padding: 20px; margin: 20px 0;">
+                    <p style="color: #ccc;">Причина: <strong>@transaction.ErrorMessage</strong></p>
+                </div>
+            }
+
+            <p style="color: #ccc; margin-bottom: 30px;">
+                К сожалению, не удалось обработать ваш платеж. Пожалуйста, попробуйте еще раз или свяжитесь с поддержкой.
+            </p>
+
+            <div class="d-flex justify-content-center gap-3">
+                <div class="main-button">
+                    <a asp-controller="Games" asp-action="Index">Попробовать снова</a>
+                </div>
+                <div class="main-border-button">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#contactsModal">Связаться с поддержкой</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

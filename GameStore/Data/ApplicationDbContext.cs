@@ -15,7 +15,8 @@ namespace GameStore.Data
         public DbSet<SteamTopUp> SteamTopUps { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
         public DbSet<User> Users { get; set; } // Add Users table
-
+        public DbSet<PaymentProvider> PaymentProviders { get; set; }
+        public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -38,8 +39,37 @@ namespace GameStore.Data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Seed initial admin user with hashed password 'admin123'
-            modelBuilder.Entity<AdminUser>().HasData(
+            modelBuilder.Entity<PaymentProvider>()
+     .HasIndex(p => p.Name)
+     .IsUnique();
+
+            modelBuilder.Entity<PaymentTransaction>()
+                .HasIndex(t => t.TransactionId)
+                .IsUnique();
+
+            modelBuilder.Entity<PaymentTransaction>()
+                .HasOne(t => t.Provider)
+                .WithMany(p => p.Transactions)
+                .HasForeignKey(t => t.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Seed тестового провайдера
+            modelBuilder.Entity<PaymentProvider>().HasData(
+                new PaymentProvider
+                {
+                    Id = 1,
+                    Name = "test",
+                    DisplayName = "Тестовый провайдер",
+                    Description = "Провайдер для тестирования платежей в режиме разработки",
+                    Icon = "fas fa-vial",
+                    IsActive = true,
+                    IsDefault = true,
+                    Configuration = "{\"test_mode\":true,\"auto_complete\":true}",
+                    CreatedAt = DateTime.UtcNow
+                });
+            
+
+                        modelBuilder.Entity<AdminUser>().HasData(
                 new AdminUser
                 {
                     Id = 1,

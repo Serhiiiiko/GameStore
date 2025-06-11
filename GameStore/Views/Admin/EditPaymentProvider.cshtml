@@ -1,0 +1,107 @@
+﻿@model PaymentProvider
+@{
+    ViewData["Title"] = "Редактировать платежный провайдер";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Редактировать</em> платежный провайдер</h4>
+        </div>
+
+        <div class="provider-form" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <form asp-controller="Admin" asp-action="EditPaymentProvider" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label asp-for="Name" class="mb-2">Системное название</label>
+                            <input asp-for="Name" class="form-control" readonly>
+                            <small class="text-muted">Системное название не может быть изменено</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label asp-for="DisplayName" class="mb-2">Отображаемое название</label>
+                            <input asp-for="DisplayName" class="form-control" required>
+                            <span asp-validation-for="DisplayName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group mb-4">
+                            <label asp-for="Description" class="mb-2">Описание</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label asp-for="Icon" class="mb-2">Иконка (Font Awesome класс)</label>
+                            <input asp-for="Icon" class="form-control" placeholder="fas fa-credit-card">
+                            <span asp-validation-for="Icon" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-4">
+                            <label class="mb-2">Статус</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                                    <label asp-for="IsActive" class="form-check-label">
+                                        Активен
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="IsDefault" class="form-check-input" type="checkbox">
+                                    <label asp-for="IsDefault" class="form-check-label">
+                                        По умолчанию
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group mb-4">
+                            <label asp-for="Configuration" class="mb-2">Конфигурация (JSON)</label>
+                            <textarea asp-for="Configuration" class="form-control" rows="10" style="font-family: monospace;"></textarea>
+                            <span asp-validation-for="Configuration" class="text-danger"></span>
+                            <small class="text-muted">Настройки провайдера в формате JSON</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <div class="main-button">
+                                <a asp-controller="Admin" asp-action="PaymentProviders">Назад</a>
+                            </div>
+                            <div class="main-button">
+                                <button type="submit">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Форматирование JSON
+        const configTextarea = document.getElementById('Configuration');
+        if (configTextarea) {
+            try {
+                const json = JSON.parse(configTextarea.value);
+                configTextarea.value = JSON.stringify(json, null, 2);
+            } catch (e) {
+                console.error('Invalid JSON:', e);
+            }
+        }
+    </script>
+}

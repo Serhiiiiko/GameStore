@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Платеж успешно завершен";
+    var transaction = ViewBag.Transaction as PaymentTransaction;
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="success-container text-center" style="background-color: #27292a; border-radius: 23px; padding: 40px;">
+            <div class="success-icon mb-4">
+                <i class="fas fa-check-circle" style="font-size: 80px; color: #4caf50;"></i>
+            </div>
+
+            <h2 style="color: #4caf50; margin-bottom: 20px;">Платеж успешно завершен!</h2>
+
+            @if (transaction != null)
+            {
+                <div class="transaction-details" style="background-color: #1f2122; border-radius: 15px; padding: 20px; margin: 20px 0;">
+                    <p style="color: #ccc;">Номер транзакции: <strong>@transaction.TransactionId</strong></p>
+                    <p style="color: #ccc;">Сумма: <strong>@transaction.Amount.ToString("C0")</strong></p>
+                    <p style="color: #ccc;">Дата: <strong>@transaction.CreatedAt.ToString("dd.MM.yyyy HH:mm")</strong></p>
+                </div>
+
+                @if (transaction.OrderId.HasValue)
+                {
+                    <p style="color: #ccc; margin-bottom: 30px;">
+                        Ключ активации игры отправлен на вашу электронную почту.
+                    </p>
+                    <div class="main-button">
+                        <a asp-controller="Account" asp-action="Orders">Перейти к покупкам</a>
+                    </div>
+                }
+                else if (transaction.SteamTopUpId.HasValue)
+                {
+                    <p style="color: #ccc; margin-bottom: 30px;">
+                        Средства зачислены на ваш Steam аккаунт.
+                    </p>
+                    <div class="main-button">
+                        <a asp-controller="Account" asp-action="TopUps">История пополнений</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="color: #ccc; margin-bottom: 30px;">
+                    Ваш платеж был успешно обработан.
+                </p>
+                <div class="main-button">
+                    <a asp-controller="Home" asp-action="Index">На главную</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

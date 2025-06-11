@@ -9,19 +9,21 @@ namespace GameStore.Controllers
         private readonly IGameService _gameService;
         private readonly IOrderRepository _orderRepository;
         private readonly ISteamTopUpRepository _steamTopUpRepository;
-
+        private readonly IPaymentService _paymentService;
         private readonly IFileService _fileService;
 
         public AdminController(
             IGameService gameService,
             IOrderRepository orderRepository,
             ISteamTopUpRepository steamTopUpRepository,
-            IFileService fileService)
+            IFileService fileService,
+            IPaymentService paymentService)
         {
             _gameService = gameService;
             _orderRepository = orderRepository;
             _steamTopUpRepository = steamTopUpRepository;
             _fileService = fileService;
+            _paymentService = paymentService;
         }
 
         // Simple authentication check for demo purposes
@@ -97,7 +99,133 @@ namespace GameStore.Controllers
 
             return View(game);
         }
+        public async Task<IActionResult> PaymentProviders()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
 
+            var providers = await _paymentService.GetAllProvidersAsync();
+
+            // Статистика транзакций
+            var transactions = await _paymentService.GetAllTransactionsAsync();
+            ViewBag.TotalTransactions = transactions.Count();
+            ViewBag.SuccessfulTransactions = transactions.Count(t => t.Status == PaymentStatus.Completed);
+            ViewBag.FailedTransactions = transactions.Count(t => t.Status == PaymentStatus.Failed);
+            ViewBag.TotalRevenue = transactions.Where(t => t.Status == PaymentStatus.Completed).Sum(t => t.Amount);
+
+            return View(providers);
+        }
+
+        public async Task<IActionResult> EditPaymentProvider(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var provider = await _paymentService.GetProviderByIdAsync(id);
+            if (provider == null)
+            {
+                return NotFound();
+            }
+
+            return View(provider);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPaymentProvider(PaymentProvider model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var existingProvider = await _paymentService.GetProviderByIdAsync(model.Id);
+                if (existingProvider == null)
+                {
+                    return NotFound();
+                }
+
+                existingProvider.DisplayName = model.DisplayName;
+                existingProvider.Description = model.Description;
+                existingProvider.Icon = model.Icon;
+                existingProvider.IsActive = model.IsActive;
+                existingProvider.Configuration = model.Configuration;
+
+                // Если делаем провайдер основным
+                if (model.IsDefault && !existingProvider.IsDefault)
+                {
+                    await _paymentService.SetActiveProviderAsync(model.Id);
+                }
+                else
+                {
+                    await _paymentService.UpdateProviderAsync(existingProvider);
+                }
+
+                TempData["Success"] = "Провайдер успешно обновлен";
+                return RedirectToAction("PaymentProviders");
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetDefaultProvider(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result = await _paymentService.SetActiveProviderAsync(id);
+
+            if (result)
+            {
+                TempData["Success"] = "Провайдер установлен как основной";
+            }
+            else
+            {
+                TempData["Error"] = "Ошибка при установке провайдера";
+            }
+
+            return RedirectToAction("PaymentProviders");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleProviderStatus(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var provider = await _paymentService.GetProviderByIdAsync(id);
+            if (provider == null)
+            {
+                return NotFound();
+            }
+
+            provider.IsActive = !provider.IsActive;
+            await _paymentService.UpdateProviderAsync(provider);
+
+            TempData["Success"] = provider.IsActive ? "Провайдер активирован" : "Провайдер деактивирован";
+            return RedirectToAction("PaymentProviders");
+        }
+
+        public async Task<IActionResult> PaymentTransactions()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var transactions = await _paymentService.GetAllTransactionsAsync();
+            return View(transactions);
+        }
         public async Task<IActionResult> Edit(int id)
         {
             if (!IsAuthenticated())

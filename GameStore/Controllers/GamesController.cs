@@ -1,5 +1,6 @@
 ﻿using GameStore.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace GameStore.Controllers
 {
@@ -7,11 +8,16 @@ namespace GameStore.Controllers
     {
         private readonly IGameService _gameService;
         private readonly IAuthService _authService;
+        private readonly ILogger<GamesController> _logger;
 
-        public GamesController(IGameService gameService, IAuthService authService)
+        public GamesController(
+            IGameService gameService,
+            IAuthService authService,
+            ILogger<GamesController> logger)
         {
             _gameService = gameService;
             _authService = authService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -31,8 +37,6 @@ namespace GameStore.Controllers
             ViewBag.IsAuthenticated = _authService.IsAuthenticated(HttpContext);
             return View(game);
         }
-
-        // Замените метод Purchase в файле GameStore/Controllers/GamesController.cs на этот:
 
         [HttpPost]
         public async Task<IActionResult> Purchase(int gameId, string email)
@@ -67,17 +71,22 @@ namespace GameStore.Controllers
 
             try
             {
-                var orderService = HttpContext.RequestServices.GetService<IOrderService>();
-                if (orderService == null)
+                var game = await _gameService.GetGameByIdAsync(gameId);
+                if (game == null)
                 {
-                    TempData["Error"] = "Сервис заказа недоступен.";
+                    throw new Exception("Игра не найдена");
+                }
 
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Сервис заказа недоступен." });
-                    }
+                // Получаем сервисы через ServiceProvider
+                var paymentService = HttpContext.RequestServices.GetService<IPaymentService>();
+                var orderRepository = HttpContext.RequestServices.GetService<IOrderRepository>();
+                var orderService = HttpContext.RequestServices.GetService<IOrderService>();
+                var emailService = HttpContext.RequestServices.GetService<IEmailService>();
+                var telegramService = HttpContext.RequestServices.GetService<ITelegramNotificationService>();
 
-                    return RedirectToAction("Index", "Games");
+                if (paymentService == null || orderRepository == null || orderService == null)
+                {
+                    throw new InvalidOperationException("Необходимые сервисы не настроены");
                 }
 
                 // Get current user's email
@@ -94,21 +103,97 @@ namespace GameStore.Controllers
                     return RedirectToAction("Index", "Games");
                 }
 
-                var order = await orderService.CreateOrderAsync(user.Email, gameId, userId.Value);
-
-                TempData["Success"] = "Покупка успешно завершена. Проверьте вашу почту для получения ключа.";
-
-                // Если это AJAX запрос, возвращаем JSON
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                // Создаем заказ
+                var order = new Models.Order
                 {
-                    return Json(new { success = true, redirectUrl = Url.Action("Orders", "Account") });
+                    GameId = gameId,
+                    UserId = userId.Value,
+                    Email = user.Email,
+                    OrderDate = DateTime.UtcNow,
+                    IsCompleted = false
+                };
+
+                // Временно сохраняем заказ
+                order = await orderRepository.CreateAsync(order);
+
+                // Создаем транзакцию
+                var transaction = await paymentService.CreateTransactionAsync(
+                    userId.Value,
+                    game.Price,
+                    orderId: order.Id
+                );
+
+                // Получаем метод оплаты из формы
+                var paymentMethod = Request.Form["paymentMethod"].ToString();
+                if (string.IsNullOrEmpty(paymentMethod))
+                {
+                    paymentMethod = "card"; // По умолчанию
                 }
 
-                // Иначе делаем обычный редирект в личный кабинет
-                return RedirectToAction("Orders", "Account");
+                // Обрабатываем платеж
+                var result = await paymentService.ProcessPaymentAsync(transaction, paymentMethod);
+
+                if (result.Success && !string.IsNullOrEmpty(result.RedirectUrl))
+                {
+                    // Если требуется редирект на страницу оплаты
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return Json(new { success = true, redirectUrl = result.RedirectUrl });
+                    }
+
+                    return Redirect(result.RedirectUrl);
+                }
+                else if (result.Success)
+                {
+                    // Если платеж обработан без редиректа (тестовый провайдер)
+                    await paymentService.UpdateTransactionStatusAsync(transaction.TransactionId, Models.PaymentStatus.Completed);
+
+                    // Завершаем заказ
+                    order.Key = await orderService.GenerateGameKeyAsync();
+                    order.IsCompleted = true;
+                    await orderRepository.UpdateAsync(order);
+
+                    // Загружаем связанную игру для уведомлений
+                    order.Game = game;
+
+                    // Отправляем email и уведомления
+                    if (emailService != null)
+                    {
+                        await emailService.SendOrderConfirmationAsync(order);
+                    }
+
+                    if (telegramService != null)
+                    {
+                        await telegramService.SendGamePurchaseNotificationAsync(order);
+                    }
+
+                    TempData["Success"] = "Покупка успешно завершена. Проверьте вашу почту для получения ключа.";
+
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return Json(new { success = true, redirectUrl = Url.Action("Success", "Payment", new { transaction = transaction.TransactionId }) });
+                    }
+
+                    return RedirectToAction("Success", "Payment", new { transaction = transaction.TransactionId });
+                }
+                else
+                {
+                    // Ошибка платежа
+                    await paymentService.UpdateTransactionStatusAsync(transaction.TransactionId, Models.PaymentStatus.Failed);
+
+                    TempData["Error"] = $"Ошибка при оплате: {result.ErrorMessage}";
+
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return Json(new { success = false, message = result.ErrorMessage });
+                    }
+
+                    return RedirectToAction("Fail", "Payment", new { transaction = transaction.TransactionId });
+                }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error during purchase");
                 TempData["Error"] = $"Ошибка при покупке: {ex.Message}";
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
