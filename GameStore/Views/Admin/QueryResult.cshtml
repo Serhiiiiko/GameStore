@@ -1,0 +1,130 @@
+﻿@using System.Data
+@model System.Data.DataTable
+@{
+    ViewData["Title"] = "Результаты запроса";
+    var query = ViewBag.Query;
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Результаты</em> запроса</h4>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-4">
+            <a asp-controller="Admin" asp-action="SqlQuery" style="color: #ec6090;">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться к SQL запросам
+            </a>
+        </div>
+
+        <!-- Query Info -->
+        <div class="query-info mb-4" style="background-color: #27292a; border-radius: 23px; padding: 20px;">
+            <h5 style="color: #ec6090; margin-bottom: 15px;">Выполненный запрос:</h5>
+            <pre style="background-color: #1f2122; color: #fff; padding: 15px; border-radius: 10px; margin: 0;"><code>@query</code></pre>
+            <div class="mt-3">
+                <p style="color: #ccc; margin: 0;">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    Найдено записей: <strong>@Model.Rows.Count</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="results-table" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            @if (Model.Rows.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                @foreach (DataColumn column in Model.Columns)
+                                {
+                                    <th>@column.ColumnName</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (DataRow row in Model.Rows)
+                            {
+                                <tr>
+                                    @foreach (var item in row.ItemArray)
+                                    {
+                                        <td>
+                                            @if (item == null || item == DBNull.Value)
+                                            {
+                                                <span style="color: #666; font-style: italic;">NULL</span>
+                                            }
+                                            else if (item is bool boolValue)
+                                            {
+                                                <span class="badge @(boolValue ? "bg-success" : "bg-danger")">
+                                                    @(boolValue ? "True" : "False")
+                                                </span>
+                                            }
+                                            else if (item is DateTime dateValue)
+                                            {
+                                                <span>@dateValue.ToString("dd.MM.yyyy HH:mm:ss")</span>
+                                            }
+                                            else if (item is decimal || item is double || item is float)
+                                            {
+                                                <span>@string.Format("{0:N2}", item)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@item.ToString()</span>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Export Button -->
+                <div class="mt-4">
+                    <button class="btn btn-secondary" onclick="exportToCSV()">
+                        <i class="fas fa-download me-2"></i>Экспортировать в CSV
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>Запрос не вернул результатов.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function exportToCSV() {
+        var table = document.querySelector('table');
+        var csv = [];
+        
+        // Get headers
+        var headers = [];
+        table.querySelectorAll('thead th').forEach(function(th) {
+            headers.push('"' + th.textContent.replace(/"/g, '""') + '"');
+        });
+        csv.push(headers.join(','));
+        
+        // Get rows
+        table.querySelectorAll('tbody tr').forEach(function(tr) {
+            var row = [];
+            tr.querySelectorAll('td').forEach(function(td) {
+                row.push('"' + td.textContent.replace(/"/g, '""') + '"');
+            });
+            csv.push(row.join(','));
+        });
+        
+        // Create and download file
+        var csvContent = csv.join('\n');
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'query_results_' + new Date().getTime() + '.csv';
+        link.click();
+    }
+</script>

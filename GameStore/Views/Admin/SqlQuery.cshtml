@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "SQL Запрос";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>SQL</em> Запрос</h4>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-4">
+            <a asp-controller="Admin" asp-action="Database" style="color: #ec6090;">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться к базе данных
+            </a>
+        </div>
+
+        <!-- Query Form -->
+        <div class="query-form" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
+                </div>
+            }
+
+            <form asp-controller="Admin" asp-action="SqlQuery" method="post">
+                <div class="form-group mb-4">
+                    <label class="mb-2">SQL Запрос (только SELECT)</label>
+                    <textarea name="query" class="form-control" rows="10"
+                              style="background-color: #1f2122; color: #fff; font-family: 'Courier New', monospace; font-size: 14px;"
+                              placeholder="SELECT * FROM Games LIMIT 10;">@ViewBag.Query</textarea>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Поддерживаются только SELECT запросы. Модифицирующие запросы (INSERT, UPDATE, DELETE) заблокированы для безопасности.
+                    </small>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-play me-2"></i>Выполнить запрос
+                        </button>
+                        <button type="button" class="btn btn-secondary ms-2" onclick="clearQuery()">
+                            <i class="fas fa-eraser me-2"></i>Очистить
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sample Queries -->
+        <div class="sample-queries mt-4" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            <h5 style="color: #ec6090; margin-bottom: 20px;">Примеры запросов</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="query-example" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer;"
+                         onclick="setQuery('SELECT * FROM Games ORDER BY Price DESC LIMIT 10')">
+                        <h6 style="color: #ec6090; margin-bottom: 5px;">Топ 10 самых дорогих игр</h6>
+                        <code style="color: #ccc; font-size: 12px;">SELECT * FROM Games ORDER BY Price DESC LIMIT 10</code>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="query-example" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer;"
+                         onclick="setQuery('SELECT COUNT(*) as count, SUM(Amount) as total FROM Orders WHERE IsCompleted = true')">
+                        <h6 style="color: #ec6090; margin-bottom: 5px;">Статистика заказов</h6>
+                        <code style="color: #ccc; font-size: 12px;">SELECT COUNT(*) as count, SUM(Amount) as total FROM Orders WHERE IsCompleted = true</code>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="query-example" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer;"
+                         onclick="setQuery('SELECT Genre, COUNT(*) as count, AVG(Price) as avg_price FROM Games GROUP BY Genre')">
+                        <h6 style="color: #ec6090; margin-bottom: 5px;">Игры по жанрам</h6>
+                        <code style="color: #ccc; font-size: 12px;">SELECT Genre, COUNT(*) as count, AVG(Price) as avg_price FROM Games GROUP BY Genre</code>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="query-example" style="background-color: #1f2122; border-radius: 10px; padding: 15px; cursor: pointer;"
+                         onclick="setQuery('SELECT u.Email, COUNT(o.Id) as orders_count FROM Users u LEFT JOIN Orders o ON u.Id = o.UserId GROUP BY u.Id, u.Email ORDER BY orders_count DESC LIMIT 10')">
+                        <h6 style="color: #ec6090; margin-bottom: 5px;">Топ покупателей</h6>
+                        <code style="color: #ccc; font-size: 12px;">SELECT u.Email, COUNT(o.Id) as orders_count FROM Users u LEFT JOIN Orders o...</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .query-example:hover {
+        background-color: #2a2d2e !important;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+</style>
+
+<script>
+    function setQuery(query) {
+        document.querySelector('textarea[name="query"]').value = query;
+    }
+
+    function clearQuery() {
+        document.querySelector('textarea[name="query"]').value = '';
+    }
+</script>

@@ -11,24 +11,29 @@
 
         <div class="admin-menu mb-4" style="background-color: #27292a; border-radius: 23px; padding: 20px;">
             <div class="row">
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                     <div class="main-button">
-                        <a asp-controller="Admin" asp-action="Index" class="active">Игры</a>
+                        <a asp-controller="Admin" asp-action="Index">Игры</a>
                     </div>
                 </div>
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                     <div class="main-button">
                         <a asp-controller="Admin" asp-action="Orders">Заказы</a>
                     </div>
                 </div>
-                <div class="col-md-3 text-center">
+                <div class="col-md-2 text-center">
                     <div class="main-button">
-                        <a asp-controller="Admin" asp-action="TopUps">Пополнения Steam</a>
+                        <a asp-controller="Admin" asp-action="TopUps" class="active">Пополнения</a>
                     </div>
                 </div>
                 <div class="col-md-3 text-center">
                     <div class="main-button">
                         <a asp-controller="Admin" asp-action="PaymentProviders">Платежные системы</a>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="main-button">
+                        <a asp-controller="Admin" asp-action="Database">База данных</a>
                     </div>
                 </div>
             </div>

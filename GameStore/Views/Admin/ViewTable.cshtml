@@ -1,0 +1,151 @@
+﻿@using System.Data
+@model System.Data.DataTable
+@{
+    ViewData["Title"] = $"Таблица: {ViewBag.TableName}";
+    var columns = ViewBag.Columns as List<string>;
+    var currentPage = ViewBag.CurrentPage;
+    var totalPages = ViewBag.TotalPages;
+    var totalRows = ViewBag.TotalRows;
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="heading-section">
+            <h4><em>Таблица:</em> @ViewBag.TableName</h4>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-4">
+            <a asp-controller="Admin" asp-action="Database" style="color: #ec6090;">
+                <i class="fas fa-arrow-left me-2"></i>Вернуться к списку таблиц
+            </a>
+        </div>
+
+        <!-- Table Info -->
+        <div class="table-info mb-4" style="background-color: #27292a; border-radius: 23px; padding: 20px;">
+            <div class="row">
+                <div class="col-md-4">
+                    <p style="color: #ccc;">Всего записей: <strong style="color: #ec6090;">@totalRows</strong></p>
+                </div>
+                <div class="col-md-4">
+                    <p style="color: #ccc;">Страница: <strong style="color: #ec6090;">@currentPage / @totalPages</strong></p>
+                </div>
+                <div class="col-md-4">
+                    <p style="color: #ccc;">Колонок: <strong style="color: #ec6090;">@Model.Columns.Count</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Data -->
+        <div class="table-data" style="background-color: #27292a; border-radius: 23px; padding: 30px;">
+            @if (Model.Rows.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                @foreach (DataColumn column in Model.Columns)
+                                {
+                                    <th>
+                                        @column.ColumnName
+                                        <br/>
+                                        <small style="color: #999; font-weight: normal;">@GetColumnType(column)</small>
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (DataRow row in Model.Rows)
+                            {
+                                <tr>
+                                    @foreach (var item in row.ItemArray)
+                                    {
+                                        <td>
+                                            @if (item == null || item == DBNull.Value)
+                                            {
+                                                <span style="color: #666; font-style: italic;">NULL</span>
+                                            }
+                                            else if (item is bool boolValue)
+                                            {
+                                                <span class="badge @(boolValue ? "bg-success" : "bg-danger")">
+                                                    @(boolValue ? "True" : "False")
+                                                </span>
+                                            }
+                                            else if (item is DateTime dateValue)
+                                            {
+                                                <span>@dateValue.ToString("dd.MM.yyyy HH:mm:ss")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@item.ToString()</span>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <nav aria-label="Table pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" asp-controller="Admin" asp-action="ViewTable" 
+                                   asp-route-tableName="@ViewBag.TableName" asp-route-page="@(currentPage - 1)"
+                                   style="background-color: #1f2122; border-color: #444; color: #fff;">
+                                    Назад
+                                </a>
+                            </li>
+
+                            @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" asp-controller="Admin" asp-action="ViewTable" 
+                                       asp-route-tableName="@ViewBag.TableName" asp-route-page="@i"
+                                       style="@(i == currentPage ? "background-color: #ec6090; border-color: #ec6090;" : "background-color: #1f2122; border-color: #444;") color: #fff;">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link" asp-controller="Admin" asp-action="ViewTable" 
+                                   asp-route-tableName="@ViewBag.TableName" asp-route-page="@(currentPage + 1)"
+                                   style="background-color: #1f2122; border-color: #444; color: #fff;">
+                                    Вперед
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>Таблица не содержит данных.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetColumnType(DataColumn column)
+    {
+        var typeName = column.DataType.Name;
+        return typeName switch
+        {
+            "String" => "text",
+            "Int32" => "integer",
+            "Int64" => "bigint",
+            "Decimal" => "decimal",
+            "Boolean" => "boolean",
+            "DateTime" => "timestamp",
+            "Double" => "double",
+            _ => typeName.ToLower()
+        };
+    }
+}

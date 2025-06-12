@@ -1,6 +1,7 @@
 ﻿using GameStore.Interfaces;
 using GameStore.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace GameStore.Controllers
 {
@@ -11,19 +12,22 @@ namespace GameStore.Controllers
         private readonly ISteamTopUpRepository _steamTopUpRepository;
         private readonly IPaymentService _paymentService;
         private readonly IFileService _fileService;
+        private readonly IDatabaseService _databaseService;
 
         public AdminController(
             IGameService gameService,
             IOrderRepository orderRepository,
             ISteamTopUpRepository steamTopUpRepository,
             IFileService fileService,
-            IPaymentService paymentService)
+            IPaymentService paymentService,
+            IDatabaseService databaseService)
         {
             _gameService = gameService;
             _orderRepository = orderRepository;
             _steamTopUpRepository = steamTopUpRepository;
             _fileService = fileService;
             _paymentService = paymentService;
+            _databaseService = databaseService;
         }
 
         // Simple authentication check for demo purposes
@@ -77,6 +81,7 @@ namespace GameStore.Controllers
 
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(Game game)
         {
@@ -99,6 +104,126 @@ namespace GameStore.Controllers
 
             return View(game);
         }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var game = await _gameService.GetGameByIdAsync(id);
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            return View(game);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Game game)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Get the existing game
+                var existingGame = await _gameService.GetGameByIdAsync(game.Id);
+
+                if (existingGame == null)
+                {
+                    return NotFound();
+                }
+
+                // Update the properties of the existing entity
+                existingGame.Title = game.Title;
+                existingGame.Description = game.Description;
+                existingGame.Genre = game.Genre;
+                existingGame.Price = game.Price;
+                existingGame.Rating = game.Rating;
+                existingGame.Downloads = game.Downloads;
+
+                // Handle image upload
+                if (game.ImageFile != null)
+                {
+                    // Delete old image if it exists
+                    if (!string.IsNullOrEmpty(existingGame.ImageUrl))
+                    {
+                        _fileService.DeleteImage(existingGame.ImageUrl);
+                    }
+
+                    // Save new image
+                    existingGame.ImageUrl = await _fileService.SaveImageAsync(game.ImageFile);
+                }
+
+                // Update the existing entity
+                await _gameService.UpdateGameAsync(existingGame);
+                return RedirectToAction("Index");
+            }
+
+            return View(game);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var game = await _gameService.GetGameByIdAsync(id);
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            return View(game);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var game = await _gameService.GetGameByIdAsync(id);
+            if (game != null && !string.IsNullOrEmpty(game.ImageUrl))
+            {
+                _fileService.DeleteImage(game.ImageUrl);
+            }
+
+            await _gameService.DeleteGameAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Orders()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var orders = await _orderRepository.GetAllAsync();
+            return View(orders);
+        }
+
+        public async Task<IActionResult> TopUps()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            var topUps = await _steamTopUpRepository.GetAllAsync();
+            return View(topUps);
+        }
+
         public async Task<IActionResult> PaymentProviders()
         {
             if (!IsAuthenticated())
@@ -226,123 +351,86 @@ namespace GameStore.Controllers
             var transactions = await _paymentService.GetAllTransactionsAsync();
             return View(transactions);
         }
-        public async Task<IActionResult> Edit(int id)
+
+        // ========== МЕТОДЫ ДЛЯ РАБОТЫ С БАЗОЙ ДАННЫХ ==========
+
+        public async Task<IActionResult> Database()
         {
             if (!IsAuthenticated())
             {
                 return RedirectToAction("Login");
             }
 
-            var game = await _gameService.GetGameByIdAsync(id);
-            if (game == null)
+            var tables = await _databaseService.GetTableNamesAsync();
+            var dbInfo = await _databaseService.GetDatabaseInfoAsync();
+
+            ViewBag.DatabaseInfo = dbInfo;
+            return View(tables);
+        }
+
+        public async Task<IActionResult> ViewTable(string tableName, int page = 1)
+        {
+            if (!IsAuthenticated())
             {
-                return NotFound();
+                return RedirectToAction("Login");
             }
 
-            return View(game);
+            if (string.IsNullOrEmpty(tableName))
+            {
+                return RedirectToAction("Database");
+            }
+
+            const int pageSize = 50;
+            var data = await _databaseService.GetTableDataAsync(tableName, page, pageSize);
+            var totalRows = await _databaseService.GetTableRowCountAsync(tableName);
+            var columns = await _databaseService.GetTableColumnsAsync(tableName);
+
+            ViewBag.TableName = tableName;
+            ViewBag.Columns = columns;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalRows / (double)pageSize);
+            ViewBag.TotalRows = totalRows;
+
+            return View(data);
+        }
+
+        [HttpGet]
+        public IActionResult SqlQuery()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login");
+            }
+
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Game game)
+        public async Task<IActionResult> SqlQuery(string query)
         {
             if (!IsAuthenticated())
             {
                 return RedirectToAction("Login");
             }
 
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(query))
             {
-                // Get the existing game
-                var existingGame = await _gameService.GetGameByIdAsync(game.Id);
-
-                if (existingGame == null)
-                {
-                    return NotFound();
-                }
-
-                // Update the properties of the existing entity
-                existingGame.Title = game.Title;
-                existingGame.Description = game.Description;
-                existingGame.Genre = game.Genre;
-                existingGame.Price = game.Price;
-                existingGame.Rating = game.Rating;
-                existingGame.Downloads = game.Downloads;
-
-                // Handle image upload
-                if (game.ImageFile != null)
-                {
-                    // Delete old image if it exists
-                    if (!string.IsNullOrEmpty(existingGame.ImageUrl))
-                    {
-                        _fileService.DeleteImage(existingGame.ImageUrl);
-                    }
-
-                    // Save new image
-                    existingGame.ImageUrl = await _fileService.SaveImageAsync(game.ImageFile);
-                }
-
-                // Update the existing entity
-                await _gameService.UpdateGameAsync(existingGame);
-                return RedirectToAction("Index");
+                ViewBag.Error = "Запрос не может быть пустым";
+                return View();
             }
 
-            return View(game);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            if (!IsAuthenticated())
+            try
             {
-                return RedirectToAction("Login");
+                var result = await _databaseService.ExecuteSelectQueryAsync(query);
+                ViewBag.Query = query;
+                return View("QueryResult", result);
             }
-
-            var game = await _gameService.GetGameByIdAsync(id);
-            if (game == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                ViewBag.Error = $"Ошибка выполнения запроса: {ex.Message}";
+                ViewBag.Query = query;
+                return View();
             }
-
-            return View(game);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (!IsAuthenticated())
-            {
-                return RedirectToAction("Login");
-            }
-
-            var game = await _gameService.GetGameByIdAsync(id);
-            if (game != null && !string.IsNullOrEmpty(game.ImageUrl))
-            {
-                _fileService.DeleteImage(game.ImageUrl);
-            }
-
-            await _gameService.DeleteGameAsync(id);
-            return RedirectToAction("Index");
-        }
-
-        public async Task<IActionResult> Orders()
-        {
-            if (!IsAuthenticated())
-            {
-                return RedirectToAction("Login");
-            }
-
-            var orders = await _orderRepository.GetAllAsync();
-            return View(orders);
-        }
-
-        public async Task<IActionResult> TopUps()
-        {
-            if (!IsAuthenticated())
-            {
-                return RedirectToAction("Login");
-            }
-
-            var topUps = await _steamTopUpRepository.GetAllAsync();
-            return View(topUps);
         }
     }
 }

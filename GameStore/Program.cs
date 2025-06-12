@@ -44,7 +44,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentProviderFactory, PaymentProviderFactory>();
 builder.Services.AddScoped<TestPaymentProvider>();
-// Add Memory Cache
+builder.Services.AddScoped<IDatabaseService, DatabaseService>();
 builder.Services.AddMemoryCache();
 
 // Rate limiting configuration
