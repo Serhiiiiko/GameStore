@@ -49,7 +49,23 @@ namespace GameStore.Repositories
 
         public async Task UpdateAsync(Order order)
         {
-            _context.Entry(order).State = EntityState.Modified;
+            var existingOrder = await _context.Orders.FindAsync(order.Id);
+            if (existingOrder != null)
+            {
+                existingOrder.Email = order.Email;
+                existingOrder.GameId = order.GameId;
+                existingOrder.UserId = order.UserId;
+                existingOrder.Key = order.Key;
+                existingOrder.OrderDate = order.OrderDate;
+                existingOrder.IsCompleted = order.IsCompleted;
+
+                _context.Entry(existingOrder).State = EntityState.Modified;
+            }
+            else
+            {
+                _context.Entry(order).State = EntityState.Modified;
+            }
+
             await _context.SaveChangesAsync();
         }
     }

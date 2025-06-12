@@ -110,7 +110,8 @@ namespace GameStore.Controllers
                     UserId = userId.Value,
                     Email = user.Email,
                     OrderDate = DateTime.UtcNow,
-                    IsCompleted = false
+                    IsCompleted = false,
+                    Key = "" // Временный пустой ключ
                 };
 
                 // Временно сохраняем заказ
@@ -148,10 +149,20 @@ namespace GameStore.Controllers
                     // Если платеж обработан без редиректа (тестовый провайдер)
                     await paymentService.UpdateTransactionStatusAsync(transaction.TransactionId, Models.PaymentStatus.Completed);
 
-                    // Завершаем заказ
-                    order.Key = await orderService.GenerateGameKeyAsync();
-                    order.IsCompleted = true;
-                    await orderRepository.UpdateAsync(order);
+                    // Генерируем ключ и завершаем заказ
+                    var gameKey = await orderService.GenerateGameKeyAsync();
+
+                    // Получаем заказ из базы данных для обновления
+                    var orderToUpdate = await orderRepository.GetByIdAsync(order.Id);
+                    if (orderToUpdate != null)
+                    {
+                        orderToUpdate.Key = gameKey;
+                        orderToUpdate.IsCompleted = true;
+                        await orderRepository.UpdateAsync(orderToUpdate);
+
+                        // Обновляем локальный объект для отправки уведомлений
+                        order = orderToUpdate;
+                    }
 
                     // Загружаем связанную игру для уведомлений
                     order.Game = game;

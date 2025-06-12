@@ -98,9 +98,16 @@ namespace GameStore.Controllers
                     // Если платеж обработан без редиректа (тестовый провайдер)
                     await paymentService.UpdateTransactionStatusAsync(transaction.TransactionId, PaymentStatus.Completed);
 
-                    // Завершаем пополнение
-                    topUp.IsCompleted = true;
-                    await steamTopUpRepository.UpdateAsync(topUp);
+                    // Получаем запись о пополнении из базы данных для обновления
+                    var topUpToUpdate = await steamTopUpRepository.GetByIdAsync(topUp.Id);
+                    if (topUpToUpdate != null)
+                    {
+                        topUpToUpdate.IsCompleted = true;
+                        await steamTopUpRepository.UpdateAsync(topUpToUpdate);
+
+                        // Обновляем локальный объект для отправки уведомлений
+                        topUp = topUpToUpdate;
+                    }
 
                     // Отправляем уведомления
                     if (emailService != null)

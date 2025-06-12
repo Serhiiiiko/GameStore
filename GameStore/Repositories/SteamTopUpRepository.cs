@@ -40,7 +40,23 @@ namespace GameStore.Repositories
 
         public async Task UpdateAsync(SteamTopUp topUp)
         {
-            _context.Entry(topUp).State = EntityState.Modified;
+            var existingTopUp = await _context.SteamTopUps.FindAsync(topUp.Id);
+            if (existingTopUp != null)
+            {
+                existingTopUp.SteamId = topUp.SteamId;
+                existingTopUp.Email = topUp.Email;
+                existingTopUp.Amount = topUp.Amount;
+                existingTopUp.UserId = topUp.UserId;
+                existingTopUp.Date = topUp.Date;
+                existingTopUp.IsCompleted = topUp.IsCompleted;
+
+                _context.Entry(existingTopUp).State = EntityState.Modified;
+            }
+            else
+            {
+                _context.Entry(topUp).State = EntityState.Modified;
+            }
+
             await _context.SaveChangesAsync();
         }
     }

@@ -33,7 +33,7 @@ namespace GameStore.Services.PaymentProviders
                 Success = true,
                 TransactionId = request.TransactionId,
                 ProviderTransactionId = testProviderTransactionId,
-                RedirectUrl = $"{request.SuccessUrl}?transaction={request.TransactionId}",
+                RedirectUrl = null, // Тестовый провайдер не требует редиректа
                 AdditionalData = new Dictionary<string, string>
                 {
                     { "test_mode", "true" },
