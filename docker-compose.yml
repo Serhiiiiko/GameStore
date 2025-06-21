@@ -8,13 +8,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: gamestore
-      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
-      # Enable WAL archiving for backup
-      POSTGRES_INITDB_WALDIR: /var/lib/postgresql/wal
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - postgres-backup:/backup
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -26,19 +21,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 256M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "5"
+        max-file: "3"
 
   minio:
     image: minio/minio:latest
@@ -50,7 +37,6 @@ services:
       MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
     volumes:
       - minio-data:/data
-      - minio-config:/root/.minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -63,14 +49,6 @@ services:
       timeout: 20s
       retries: 3
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
     logging:
       driver: "json-file"
       options:
@@ -82,10 +60,6 @@ services:
     build:
       context: .
       dockerfile: GameStore/Dockerfile
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
     container_name: gamestore-webapp
     depends_on:
       postgres:
@@ -95,7 +69,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=gamestore;Username=postgres;Password=postgres;Pooling=true;Minimum Pool Size=10;Maximum Pool Size=100;Connection Idle Lifetime=300;
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=gamestore;Username=postgres;Password=postgres;Pooling=true;Minimum Pool Size=10;Maximum Pool Size=100;
       - Email__Host=smtp.gmail.com
       - Email__Port=587
       - Email__Sender=levwerlop@gmail.com
@@ -111,84 +85,30 @@ services:
       - MinIO__UseSSL=false
       - MinIO__PublicUrl=http://localhost:9000
       - BaseUrl=http://localhost:8080
-      - HealthCheck__Enabled=true
-      - HealthCheck__Interval=60
-      - HealthCheck__NotificationCooldown=300
     ports:
       - "8080:8080"
     restart: unless-stopped
     networks:
       - gamestore-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "5"
-    labels:
-      - "com.gamestore.service=webapp"
-      - "com.gamestore.monitor=true"
 
-  # Auto-restart unhealthy containers
-  autoheal:
-    image: willfarrell/autoheal:latest
-    container_name: gamestore-autoheal
-    restart: always
-    environment:
-      - AUTOHEAL_CONTAINER_LABEL=com.gamestore.monitor
-      - AUTOHEAL_INTERVAL=60
-      - AUTOHEAL_START_PERIOD=300
-      - AUTOHEAL_DEFAULT_STOP_TIMEOUT=10
-      - DOCKER_SOCK=/var/run/docker.sock
-      - WEBHOOK_URL=http://gamestore:8080/health/webhook
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - gamestore-network
-
-  # Backup service
-  postgres-backup:
-    image: postgres:14-alpine
-    container_name: gamestore-postgres-backup
-    environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=gamestore
-      - BACKUP_SCHEDULE=0 2 * * * # Daily at 2 AM
-      - BACKUP_RETENTION_DAYS=7
-    volumes:
-      - postgres-backup:/backup
-      - ./scripts/backup.sh:/backup.sh:ro
-    command: ["/bin/sh", "-c", "while true; do /backup.sh; sleep 86400; done"]
-    depends_on:
-      - postgres
-    networks:
-      - gamestore-network
-    restart: unless-stopped
-
-  # Optional: pgAdmin for database management
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: gamestore-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gamestore.local
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
       PGADMIN_CONFIG_SERVER_MODE: 'False'
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
       - "5050:80"
     networks:
@@ -207,38 +127,11 @@ services:
 networks:
   gamestore-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
 
 volumes:
   postgres-data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/postgres
-  postgres-backup:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/postgres-backup
   minio-data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/minio
-  minio-config:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/minio-config
   pgadmin-data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/pgadmin
