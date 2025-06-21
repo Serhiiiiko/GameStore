@@ -9,11 +9,15 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: gamestore
       POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
+      # Enable WAL archiving for backup
+      POSTGRES_INITDB_WALDIR: /var/lib/postgresql/wal
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - postgres-backup:/backup
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
-    restart: always
+    restart: unless-stopped
     networks:
       - gamestore-network
     healthcheck:
@@ -22,11 +26,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "3"
+        max-file: "5"
 
   minio:
     image: minio/minio:latest
@@ -38,18 +50,27 @@ services:
       MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
     volumes:
       - minio-data:/data
+      - minio-config:/root/.minio
     ports:
       - "9000:9000"
       - "9001:9001"
-    restart: always
+    restart: unless-stopped
     networks:
       - gamestore-network
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
     logging:
       driver: "json-file"
       options:
@@ -90,17 +111,16 @@ services:
       - MinIO__UseSSL=false
       - MinIO__PublicUrl=http://localhost:9000
       - BaseUrl=http://localhost:8080
-      - Session__IdleTimeout=30
-      - Logging__LogLevel__Default=Information
-      - Logging__LogLevel__Microsoft=Warning
-      - Logging__LogLevel__Microsoft.Hosting.Lifetime=Information
+      - HealthCheck__Enabled=true
+      - HealthCheck__Interval=60
+      - HealthCheck__NotificationCooldown=300
     ports:
       - "8080:8080"
-    restart: always
+    restart: unless-stopped
     networks:
       - gamestore-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -118,6 +138,47 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+    labels:
+      - "com.gamestore.service=webapp"
+      - "com.gamestore.monitor=true"
+
+  # Auto-restart unhealthy containers
+  autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: gamestore-autoheal
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=com.gamestore.monitor
+      - AUTOHEAL_INTERVAL=60
+      - AUTOHEAL_START_PERIOD=300
+      - AUTOHEAL_DEFAULT_STOP_TIMEOUT=10
+      - DOCKER_SOCK=/var/run/docker.sock
+      - WEBHOOK_URL=http://gamestore:8080/health/webhook
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gamestore-network
+
+  # Backup service
+  postgres-backup:
+    image: postgres:14-alpine
+    container_name: gamestore-postgres-backup
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gamestore
+      - BACKUP_SCHEDULE=0 2 * * * # Daily at 2 AM
+      - BACKUP_RETENTION_DAYS=7
+    volumes:
+      - postgres-backup:/backup
+      - ./scripts/backup.sh:/backup.sh:ro
+    command: ["/bin/sh", "-c", "while true; do /backup.sh; sleep 86400; done"]
+    depends_on:
+      - postgres
+    networks:
+      - gamestore-network
+    restart: unless-stopped
 
   # Optional: pgAdmin for database management
   pgadmin:
@@ -127,6 +188,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@gamestore.local
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
       - "5050:80"
     networks:
@@ -134,48 +196,13 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     logging:
       driver: "json-file"
       options:
         max-size: "5m"
         max-file: "2"
-
-  # Optional: Monitoring with Prometheus and Grafana
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: gamestore-prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
-    ports:
-      - "9090:9090"
-    networks:
-      - gamestore-network
-    restart: unless-stopped
-    profiles:
-      - monitoring
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: gamestore-grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
-    ports:
-      - "3000:3000"
-    networks:
-      - gamestore-network
-    restart: unless-stopped
-    depends_on:
-      - prometheus
-    profiles:
-      - monitoring
 
 networks:
   gamestore-network:
@@ -187,9 +214,31 @@ networks:
 volumes:
   postgres-data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/postgres
+  postgres-backup:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/postgres-backup
   minio-data:
     driver: local
-  prometheus-data:
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/minio
+  minio-config:
     driver: local
-  grafana-data:
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/minio-config
+  pgadmin-data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/pgadmin

@@ -83,8 +83,7 @@ builder.Services.AddHealthChecks()
         "telegram",
         failureStatus: HealthStatus.Degraded,
         tags: new[] { "notifications" })
-    .AddProcessAllocatedMemoryHealthCheck(
-        maximumMegabytesAllocated: 500,
+    .AddTypeActivatedCheck<MemoryHealthCheck>(
         name: "memory",
         failureStatus: HealthStatus.Degraded,
         tags: new[] { "memory" });
